@@ -1,9 +1,28 @@
 %{
-	#include <stdio.h>
-	int yylex(void);
-	void yyerror(char *s);
+	#include <cstdio>
+	#include <iostream>
+	#include "ast.h"
+
+	#ifdef NULL
+	#undef NULL
+	#define NULL (void *)0
+	#endif
+
 	extern int yylineno;
 	extern char* yytext;
+
+	using namespace std;
+
+	extern "C"
+	{
+		int yyparse(void);
+		int yylex(void);
+		int yywrap()
+		{
+				return 1;
+		}
+	}
+	void yyerror(const char *s);
 %}
 
 %start Program
@@ -168,7 +187,7 @@ Constant    :  T_INTCONSTANT {printf("Constant\n");}
             ;
 %%
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
 	printf("\nError: (lineno: %d) %s encountered at %s\n", yylineno, s, yytext);
 }
@@ -187,5 +206,6 @@ int main(){
 	/*yydebug = 1;*/
 	yydebug = 0;
     yyparse();
+	cout << endl;
     return 0;
 }

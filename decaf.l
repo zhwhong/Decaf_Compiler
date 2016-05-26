@@ -1,8 +1,17 @@
 %{
-    #include <stdio.h>
+    extern "C"
+	{
+		int yylex(void);
+	}
+    #include <cstdio>
+    #include "ast.h"
     #include "decaf.tab.h"
+
+    using namespace std;
+
     int intval;
 	char *charval;
+    int wordcount = 1;
 %}
 
 identifier  [A-Za-z][A-Za-z0-9\_]*
