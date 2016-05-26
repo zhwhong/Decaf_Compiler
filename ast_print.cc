@@ -268,11 +268,6 @@ void ClassType::print() {
 	cout << name;
 }
 
-// Print method for ClassType
-void InterfaceType::print() {
-	cout << name;
-}
-
 // Print method for InstanceType
 void InstanceType::print() {
 	classtype->print();

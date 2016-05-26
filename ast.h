@@ -17,7 +17,7 @@ typedef enum {
 
 typedef enum {
 	INT_TYPE, DOUBLE_TYPE, BOOL_TYPE, STRING_TYPE, VOID_TYPE,
-	INSTANCE_TYPE, CLASS_TYPE, INTERFACE_TYPE, ARRAY_TYPE, ERROR_TYPE, 
+	INSTANCE_TYPE, CLASS_TYPE, ARRAY_TYPE, ERROR_TYPE,
 	UNIVERSE_TYPE, NULL_TYPE
 } TypeKind;
 
@@ -235,7 +235,7 @@ public:
 	virtual ~NewArrayInstance();
 
 	void print();
-	
+
 	Expression* len;
 	Type* type;
 };
@@ -394,16 +394,6 @@ class ClassType : public Type {
 		char* name;
 };
 
-class InterfaceType : public Type {
-	public:
-		InterfaceType(char* _name);
-		virtual ~InterfaceType();
-
-		void print();
-
-		char* name;
-};
-
 class InstanceType : public Type {
 	public:
 		InstanceType(ClassEntity* _classtype);
@@ -431,7 +421,7 @@ class ArrayType : public Type {
 		Type* elementtype;
 };
 
-// UniverseType is the top-most in type hierarchy; 
+// UniverseType is the top-most in type hierarchy;
 // every type is in UniverseType
 class UniverseType : public Type {
 public:
@@ -440,8 +430,8 @@ public:
 	void print();
 };
 
-// NullType is a bottom in type hierarchy; 
-// it is in every class type 
+// NullType is a bottom in type hierarchy;
+// it is in every class type
 class NullType : public Type {
 public:
 	NullType();

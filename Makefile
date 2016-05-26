@@ -9,7 +9,7 @@ LFLAGS = -p -8 -Ce
 LIBS = -ly -lfl
 YACC = bison
 YFLAGS = -t -d -v -g
-BIN = main.out
+BIN = main
 
 OBJECTS = ast.o ast_print.o ast_symbols.o symbols.o \
 		decaf.tab.o decaf.yy.o

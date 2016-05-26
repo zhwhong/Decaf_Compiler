@@ -1,11 +1,16 @@
+/* File: decaf.y
+ * --------------
+ * Bison input file to generate the parser for the compiler.
+ */
 %{
 	#include <cstdio>
 	#include <iostream>
+	#include <list>
 	#include "ast.h"
 
 	#ifdef NULL
-	#undef NULL
-	#define NULL (void *)0
+		#undef NULL
+		#define NULL (void *)0
 	#endif
 
 	extern int yylineno;
@@ -27,38 +32,67 @@
 
 %start Program
 
+/* yylval
+ * ------
+ */
 %union{
-	double dval;
-	char *sval;
+	int 			ival;
+	bool 			bval;
+	char 			*sval;
+	double 			dval;
+	char 			identifier[129];
 }
+/* Tokens
+ * ------
+ */
+%token T_VOID T_BOOL T_INT T_DOUBLE T_STRING T_CLASS
+%token T_LET T_HET T_EQU T_UEQU T_AND T_OR
+%token T_EXTENDS T_THIS T_NEW T_STATIC T_INSTANCEOF
+%token T_WHILE T_FOR T_IF T_ELSE T_RETURN T_BREAK
+%token T_PRINT T_READINTEGER T_READLINE
+%token T_FALSE T_TRUE T_NULL
 
-%token T_BOOL T_INT T_DOUBLE T_STRING
-%token T_CLASS T_EXTENDS T_THIS T_NEW T_STATIC T_IDENTIFIER
-%token T_WHILE T_FOR T_IF T_ELSE
-%token T_RETURN T_BREAK T_VOID T_PRINT T_READINTEGER T_READLINE T_INSTANCEOF
-%token T_FALSE T_TRUE T_STRINGCONSTANT T_DOUBLECONSTANT T_INTCONSTANT T_NULL
-%token T_HET T_LET T_EQU T_UEQU T_AND T_OR
+%token <identifier> T_IDENTIFIER
+%token <ival> T_INTCONSTANT
+%token <bval> T_BOOLCONSTANT
+%token <sval> T_STRINGCONSTANT
+%token <dval> T_DOUBLECONSTANT
 
+/* Non-terminal types
+ * ------------------
+ */
+/*%type <>*/
+
+/* Precedence and associativity
+ * ----------------------------
+ * Here we establish the precedence and associativity of the
+ * tokens as needed to resolve conflicts and remove ambiguity.
+ */
 %left ')' ']'
 %left ','
 %left '='
 %left T_OR
 %left T_AND
-%left T_EQU T_UEQU
-%left '<' '>' T_HET T_LET
+%nonassoc T_EQU T_UEQU
+%nonassoc '<' '>' T_LET T_HET
 %left '+' '-'
 %left '*' '/' '%'
 %right '!'
 %left '.' '(' '['
-
 %nonassoc T_IFX
 %nonassoc T_ELSE
 
 %debug
 %%
-
-Program     :  ClassDef	{printf("Program\n");}
-            |  Program ClassDef	{printf("Program\n");}
+/* Rules
+ * -----
+ */
+Program     :  ClassDef	{
+				printf("Program : ClassDef\n");
+			}
+            |  Program ClassDef	{
+				printf("Program\n");
+			}
             ;
 VariableDef :  Variable ';' {printf("VariableDef\n");}
             ;

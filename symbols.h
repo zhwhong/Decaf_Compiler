@@ -10,7 +10,6 @@ using namespace __gnu_cxx;
 
 enum Kind {
 	CLASS_ENTITY,
-	INTERFACE_ENTITY,
 	VARIABLE_ENTITY,
 	FUNCTION_ENTITY
 };
@@ -20,9 +19,9 @@ public:
 	Entity();
 	Entity(const char* _name, Kind _kind);
 	virtual ~Entity();
-	
+
 	virtual void print();
-	
+
 	const char* name;
 	Kind kind;
 	int level_number;
