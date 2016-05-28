@@ -3,18 +3,18 @@
  * Bison input file to generate the parser for the compiler.
  */
 %{
-	#include <cstdio>
+	#include "decaf.h"
+	#include "ast.h"
 	#include <iostream>
 	#include <list>
-	#include "ast.h"
 
 	#ifdef NULL
 		#undef NULL
 		#define NULL (void *)0
 	#endif
 
+	extern char *yytext;
 	extern int yylineno;
-	extern char* yytext;
 
 	using namespace std;
 
@@ -24,7 +24,7 @@
 		int yylex(void);
 		int yywrap()
 		{
-				return 1;
+			return 1;
 		}
 	}
 	void yyerror(const char *s);
@@ -40,7 +40,7 @@
 	bool 			bval;
 	char 			*sval;
 	double 			dval;
-	char 			identifier[129];
+	char 			identifier[MaxIdentLen+1];
 }
 /* Tokens
  * ------
@@ -50,7 +50,7 @@
 %token T_EXTENDS T_THIS T_NEW T_STATIC T_INSTANCEOF
 %token T_WHILE T_FOR T_IF T_ELSE T_RETURN T_BREAK
 %token T_PRINT T_READINTEGER T_READLINE
-%token T_FALSE T_TRUE T_NULL
+%token T_NULL
 
 %token <identifier> T_IDENTIFIER
 %token <ival> T_INTCONSTANT
@@ -214,8 +214,7 @@ Expr        :  Constant {printf("Expr\n");}
             ;
 Constant    :  T_INTCONSTANT {printf("Constant\n");}
             |  T_DOUBLECONSTANT {printf("Constant\n");}
-            |  T_TRUE {printf("Constant\n");}
-            |  T_FALSE {printf("Constant\n");}
+            |  T_BOOLCONSTANT {printf("Constant\n");}
             |  T_STRINGCONSTANT {printf("Constant\n");}
             |  T_NULL {printf("Constant\n");}
             ;

@@ -1,17 +1,18 @@
+ /* File:  decaf.l
+ * ----------------
+ * Lex input file to generate the scanner for the compiler.
+ */
 %{
     extern "C"
 	{
 		int yylex(void);
 	}
-    #include <cstdio>
+
+    #include "decaf.h"
     #include "ast.h"
     #include "decaf.tab.h"
 
     using namespace std;
-
-    int intval;
-	char *charval;
-    int wordcount = 1;
 %}
 
 identifier  [A-Za-z][A-Za-z0-9\_]*
@@ -22,11 +23,11 @@ double_num  ([0-9])+"."([0-9])*([eE][-+]?[0-9]+)?
 str         \"[^\"\n]*\"
 str_error   \"[^\"\n]*$
 whitespace  [ \n\t]+
-/*delimiter [,;\{\}] */
 comment1    (\/\/[^\n]*)
 comment2    (\/\*((([^\*])|(\*[^\/]))*)\*\/)
 comment     {comment1}|{comment2}
 operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
+/*delimiter [,;\{\}] */
 
 %option yylineno
 %option never-interactive
@@ -55,9 +56,6 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
 "ReadInteger"   {return T_READINTEGER;}
 "ReadLine"      {return T_READLINE;}
 "instanceof"    {return T_INSTANCEOF;}
-"true"			{return T_TRUE;}
-"false"			{return T_FALSE;}
-
 
  /* -------------------- Operators ----------------------------- */
 "=="			{return T_EQU;}
@@ -69,83 +67,71 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
 "!"			    {return yytext[0];}
 {operator}      {return yytext[0];}
 
-{comment} {
-/* printf("%2d: comment:\t %s\n", yylineno, yytext);            */
-    }
-
-{identifier} {
-/* 		printf("%2d: identifier:\t %s\n", yylineno, yytext);    */
-/* 		yylval.cVal = strdup(yytext);                           */
-		return T_IDENTIFIER;
-	}
+ /* -------------------- Constants ------------------------------ */
+ "true"|"false" {
+     yylval.bval = (yytext[0] == 't');
+     return T_BOOLCONSTANT;
+}
 
 {dec_num} {
-/*		charval = strdup(yytext);                               */
-/*		int intval = 0;                                         */
-/*		while (*charval != '\0'){                               */
-/*			intval *= 10;                                       */
-/*			intval += *charval - '0';                           */
-/*			++charval; */
-/*		}   */
-/* 		printf("%2d: decimal:\t %d\n", yylineno, intval);       */
-/* 		yylval.uVal = intval;                                   */
-		return T_INTCONSTANT;
-	}
+    yylval.ival = strtol(yytext, NULL, 10);
+    printf("%2d: dec_num:\t %d\n", yylineno, yylval.ival);
+    return T_INTCONSTANT;
+}
 
 {hex_num} {
-/*		charval = strdup(yytext+2);                             */
-/*		int intval = 0;                                         */
-/*		while (*charval != '\0'){                               */
-/*			intval *= 16;                                       */
-/*			if ((*charval >= 'a' && *charval <= 'f')            */
-/*				|| (*charval >= 'A' && *charval <= 'F')){       */
-/*				intval += *charval - 'a' + 10;                  */
-/*			} else {                                            */
-/*				intval += *charval - '0';                       */
-/*			}                                                   */
-/*			++charval;                                          */
-/*		}                                                       */
-/* 		printf("%2d: hex_num: %s\n", yylineno, yytext);         */
-/* 		yylval.uVal = intval;                                   */
-		return T_INTCONSTANT;
-	}
+    yylval.ival = strtol(yytext, NULL, 16);
+    printf("%2d: hex_num:\t %d\n", yylineno, yylval.ival);
+    return T_INTCONSTANT;
+}
 
 {oct_num} {
-/*		charval = strdup(yytext+1);                             */
-/*		int intval = 0;                                         */
-/*		while (*charval != '\0'){                               */
-/*			intval *= 8;                                        */
-/*			intval += *charval - '0';                           */
-/*			++charval;                                          */
-/*		}                                                       */
-/* 		printf("%2d: oct_num: %s\n", yylineno, yytext);         */
-/* 		yylval.uVal = intval;                                   */
-		return T_INTCONSTANT;
-	}
+    yylval.ival = strtol(yytext, NULL, 8);
+    printf("%2d: oct_num:\t %d\n", yylineno, yylval.ival);
+    return T_INTCONSTANT;
+}
 
 {double_num} {
-/* 		printf("%2d: double:\t %s\n", yylineno, yytext);        */
-/* 		yylval.dVal = atof(yytext);                             */
-		return T_DOUBLECONSTANT;
-	}
+    yylval.dval = atof(yytext);
+    printf("%2d: double:\t %lf\n", yylineno, yylval.dval);
+	return T_DOUBLECONSTANT;
+}
 
 {str} {
-/*		charval = strdup(yytext+1);                             */
-/*		if (charval[yyleng-2] != '"')                           */
-/*			printf("improperly terminated string\n");           */
-/*		else                                                    */
-/*			charval[yyleng-2] = '\0';                           */
-/* 		printf("%2d: string:\t %s\n", yylineno, charval);       */
-/* 		yylval.cVal = strdup(charval);                          */
-		return T_STRINGCONSTANT;
-	}
+    yylval.sval = strdup(yytext);
+ 	printf("%2d: string:\t %s\n", yylineno, yylval.sval);
+	return T_STRINGCONSTANT;
+}
 
 {str_error} {
-        printf("Unterminater string!\n");
-        yylval.sval = yytext;
-        return T_STRINGCONSTANT;
+    printf("ReportError: Unterminater string!\n");
+    yylval.sval = strdup(yytext);
+    return T_STRINGCONSTANT;
+}
+ /* -------------------- Identifiers --------------------------- */
+{identifier} {
+    int len = strlen(yytext);
+    if (len > MaxIdentLen){
+        printf("ReportError: identifier's length is more than %d!\n", MaxIdentLen);
+        strncpy(yylval.identifier, yytext, MaxIdentLen);
+        yylval.identifier[MaxIdentLen] = '\0';
+    }
+    else{
+        strncpy(yylval.identifier, yytext, len);
+        yylval.identifier[len] = '\0';
+    }
+    printf("%2d: identifier:\t %s\n", yylineno, yytext);
+    return T_IDENTIFIER;
+}
+ /* --------------- Comments and Whitespace -------------------- */
+{comment} {
+    printf("%2d: comment:\t %s\n", yylineno, yytext);
 }
 
 {whitespace} {;}
+ /* -------------------- Default rule (error) ------------------ */
+. {
+    printf("ReportError: Unrecognized characters!\n");
+}
 
 %%

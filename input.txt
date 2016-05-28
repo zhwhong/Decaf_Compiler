@@ -22,7 +22,7 @@ class Main{
         class Mac powerbook;
         i = 9;
         d = 0.119;
-        str = "Hello World!";
+        str1 = "Hello World!";
         powerbook = new Mac();
         powerbook.Crash(2);
         if(i < 15)
