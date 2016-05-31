@@ -45,7 +45,7 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
 "int"           {return T_INT;}
 "double"		{return T_DOUBLE;}
 "new"           {return T_NEW;}
-"null"          {return T_NULL;}
+"null"          {yylval.ival = 0; return T_NULL;}
 "return"        {return T_RETURN;}
 "string"        {return T_STRING;}
 "this"          {return T_THIS;}
@@ -109,7 +109,7 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
     return T_STRINGCONSTANT;
 }
  /* -------------------- Identifiers --------------------------- */
-{identifier} {
+ /*{identifier} {
     int len = strlen(yytext);
     if (len > MaxIdentLen){
         printf("ReportError: identifier's length is more than %d!\n", MaxIdentLen);
@@ -122,6 +122,12 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
     }
     printf("%2d: identifier:\t %s\n", yylineno, yytext);
     return T_IDENTIFIER;
+}*/
+
+{identifier} {
+	printf("%2d: identifier:\t %s\n", yylineno, yytext);
+	yylval.sval = strdup(yytext);
+	return T_IDENTIFIER;
 }
  /* --------------- Comments and Whitespace -------------------- */
 {comment} {

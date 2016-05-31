@@ -27,7 +27,7 @@ void ForStatement::print() {
 	cout << "for (";
 	if (init != NULL)
 		init->print();
-	cout << ";";
+	// cout << ";";
 	guard->print();
 	cout << ";";
 	if (update != NULL)
@@ -47,8 +47,8 @@ void ReturnStatement::print() {
 // Print method for BlockStatement
 void BlockStatement::print() {
 	cout << "{" << endl;
-	for(auto it = decl_list->begin(); it != decl_list->end(); ++it)
-		(*it)->print();
+	// for(auto it = decl_list->begin(); it != decl_list->end(); ++it)
+	// 	(*it)->print();
 	for(auto it = stmt_list->begin(); it != stmt_list->end(); ++it)
 		(*it)->print();
 	cout << "}" << endl;
@@ -77,20 +77,38 @@ void PrintStatement::print() {
 
 // Print method for DeclStatement
 void DeclStatement::print() {
-	for(auto it = var_list->begin(); it != var_list->end();) {
-		if (it == var_list->begin())
-			(*it)->print();
-		else {
-			cout << ",";
-			(*it)->print();
-		}
-	}
-	cout << ";"<< endl;
+	// for(auto it = var_list->begin(); it != var_list->end();) {
+	// 	if (it == var_list->begin())
+	// 		(*it)->print();
+	// 	else {
+	// 		cout << ",";
+	// 		(*it)->print();
+	// 	}
+	// }
+	var_list->print();
+	// cout << ";"<< endl;
 }
 
 // Print method for BreakStatement
 void BreakStatement::print() {
 	cout << "break;" << endl;
+}
+
+// Print method for AssignStatement
+void AssignStatement::print() {
+	lhs->print();
+	cout << " = ";
+	rhs->print();
+	cout << ";";
+}
+
+void CallStatement::print() {
+	exprs->print();
+	cout << ";" << endl;
+}
+
+void NullStatement::print() {
+	cout << "null";
 }
 
 // Print method for BinaryExpression
@@ -182,6 +200,14 @@ void NewArrayInstance::print() {
 // Print method for NewInstance
 void NewInstance::print() {
 	cout << "new " << class_name;
+}
+
+void InstanceofExpr::print() {
+	cout << "instanceof(" << exprs << "," << class_name << ")";
+}
+
+void TranslateExpr::print() {
+	cout << "(class " << toType << ")" << exprs;
 }
 
 // Print method for ThisExpression

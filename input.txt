@@ -1,5 +1,25 @@
+//test single line comment
+/* class Main
+   test multiple line comments
+*/
+class Main{
+    static void main(){
+        int i;
+        double d;
+        string str;
+        class Mac powerbook;
+        i = 9;
+        d = 0.119;
+        str = "Hello World!";
+        powerbook = new Mac();
+        powerbook.Crash(2);
+        if(i < 15)
+            i = i + 1;
+        else
+            i = i - 1;
+    }
+}
 class Computer{
-    int[] a;
     int cpu;
     void Crash(int numTimes){
         int i;
@@ -11,23 +31,5 @@ class Mac extends Computer{
     int mouse;
     void Crash(int numTimes){
         Print("ack\n");
-    }
-}
-//test single line comment
-class Main{
-    static void main(){
-        int i;
-        double d;
-        string str;
-        class Mac powerbook;
-        i = 9;
-        d = 0.119;
-        str1 = "Hello World!";
-        powerbook = new Mac();
-        powerbook.Crash(2);
-        if(i < 15)
-            i = i + 1;
-        else
-            i = i - 1;
     }
 }

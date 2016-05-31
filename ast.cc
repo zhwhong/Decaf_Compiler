@@ -41,7 +41,7 @@ WhileStatement::~WhileStatement() {}
 //
 ////////////////////////////////
 
-ForStatement::ForStatement(Expression* _init, Expression* _guard, Expression* _update, Statement* _body)
+ForStatement::ForStatement(Statement* _init, Expression* _guard, Statement* _update, Statement* _body)
 	:	init(_init),
 		guard(_guard),
 		update(_update),
@@ -72,9 +72,8 @@ ReturnStatement::~ReturnStatement() {}
 //
 ////////////////////////////////
 
-BlockStatement::BlockStatement(list<Entity*>* _decl_list, list<Statement*>* _stmt_list)
-	:	decl_list(_decl_list),
-		stmt_list(_stmt_list)
+BlockStatement::BlockStatement(list<Statement*>* _stmt_list)
+	:	stmt_list(_stmt_list)
 {
     lineno = yylineno;
 }
@@ -88,7 +87,7 @@ BlockStatement::~BlockStatement() {}
 //
 ////////////////////////////////
 
-DeclStatement::DeclStatement(list<Entity*>* _var_list)
+DeclStatement::DeclStatement(Entity* _var_list)
 	:	var_list(_var_list)
 {
     lineno = yylineno;
@@ -136,6 +135,31 @@ BreakStatement::BreakStatement() {
 }
 
 BreakStatement::~BreakStatement() {}
+
+
+AssignStatement::AssignStatement(Expression* _lhs, Expression* _rhs)
+	:	lhs(_lhs),
+		rhs(_rhs)
+{
+    lineno = yylineno;
+}
+
+AssignStatement::~AssignStatement() {}
+
+CallStatement::CallStatement(Expression* _exprs)
+	:	exprs(_exprs)
+{
+    lineno = yylineno;
+}
+
+CallStatement::~CallStatement() {}
+
+NullStatement::NullStatement()
+{
+    lineno = yylineno;
+}
+
+NullStatement::~NullStatement() {}
 
 ////////////////////////////////
 //
@@ -260,6 +284,23 @@ NewInstance::NewInstance(char* _class_name)
 
 NewInstance::~NewInstance() {}
 
+InstanceofExpr::InstanceofExpr(Expression* _exprs, char* _class_name)
+  : exprs(_exprs),
+    class_name(_class_name)
+{
+    lineno = yylineno;
+}
+
+InstanceofExpr::~InstanceofExpr() {}
+
+TranslateExpr::TranslateExpr(char* _toType, Expression* _exprs)
+  : toType(_toType),
+  	exprs(_exprs)
+{
+    lineno = yylineno;
+}
+
+TranslateExpr::~TranslateExpr() {}
 
 ////////////////////////////////
 //

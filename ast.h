@@ -69,7 +69,6 @@ public:
 	Statement* elsepart;
 };
 
-
 class WhileStatement : public Statement {
 public:
 	WhileStatement(Expression* _expr, Statement* _body);
@@ -83,14 +82,14 @@ public:
 
 class ForStatement : public Statement {
 public:
-	ForStatement(Expression* _init, Expression* _guard, Expression* _update, Statement* _body);
+	ForStatement(Statement* _init, Expression* _guard, Statement* _update, Statement* _body);
 	virtual ~ForStatement();
 
 	void print();
 
-	Expression* init;
+	Statement* init;
 	Expression* guard;
-	Expression* update;
+	Statement* update;
 	Statement* body;
 };
 
@@ -107,24 +106,23 @@ public:
 
 class BlockStatement : public Statement {
 public:
-	BlockStatement(list<Entity*>* _decl_list, list<Statement*>* _stmt_list);
+	BlockStatement(list<Statement*>* _stmt_list);
 	virtual ~BlockStatement();
 
 	void print();
 
-	list<Entity*>* decl_list;
 	list<Statement*>* stmt_list;
 };
 
 // not used
 class DeclStatement : public Statement {
 public:
-	DeclStatement(list<Entity*>* _var_list);
+	DeclStatement(Entity* _var_list);
 	virtual ~DeclStatement();
 
 	void print();
 
-	list<Entity*>* var_list;
+	Entity* var_list;
 };
 
 class ExprStatement : public Statement {
@@ -152,6 +150,34 @@ class BreakStatement : public Statement {
 		BreakStatement();
 		virtual ~BreakStatement();
 		void print();
+};
+
+class AssignStatement : public Statement {
+public:
+	AssignStatement(Expression* _lhs, Expression* _rhs);
+	virtual ~AssignStatement();
+
+	void print();
+
+	Expression* lhs;
+	Expression* rhs;
+};
+
+class CallStatement : public Statement {
+public:
+	CallStatement(Expression* _exprs);
+	virtual ~CallStatement();
+
+	void print();
+
+	Expression* exprs;
+};
+
+class NullStatement : public Statement {
+public:
+	NullStatement();
+	virtual ~NullStatement();
+	void print();
 };
 
 
@@ -249,6 +275,28 @@ public:
 	void print();
 
 	char* class_name;
+};
+
+class InstanceofExpr : public Expression {
+public:
+	InstanceofExpr(Expression* _exprs, char* _class_name);
+	virtual ~InstanceofExpr();
+
+	void print();
+
+	Expression* exprs;
+	char* class_name;
+};
+
+class TranslateExpr : public Expression {
+public:
+	TranslateExpr(char* _toType, Expression* _exprs);
+	virtual ~TranslateExpr();
+
+	void print();
+
+	char* toType;
+	Expression* exprs;
 };
 
 class ThisExpression : public Expression {

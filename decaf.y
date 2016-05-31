@@ -8,10 +8,10 @@
 	#include <iostream>
 	#include <list>
 
-	#ifdef NULL
+	/*#ifdef NULL
 		#undef NULL
 		#define NULL (void *)0
-	#endif
+	#endif*/
 
 	extern char *yytext;
 	extern int yylineno;
@@ -28,6 +28,9 @@
 		}
 	}
 	void yyerror(const char *s);
+
+	list<Entity*>* toplevel = new list<Entity*>();
+	ClassEntity* objectclass = new ClassEntity("Object", (ClassEntity*)NULL, new list<Entity*>());
 %}
 
 %start Program
@@ -36,11 +39,27 @@
  * ------
  */
 %union{
+	/* Primitive */
 	int 			ival;
 	bool 			bval;
 	char 			*sval;
 	double 			dval;
-	char 			identifier[MaxIdentLen+1];
+	/*char 			identifier[MaxIdentLen+1];*/
+	/* List */
+	list<Entity*>		*entityList;
+	list<Expression*>	*exprList;
+	list<Statement*>	*stmtList;
+	/* Entity */
+	Entity				*entity;
+	ClassEntity			*classEntity;
+	FunctionEntity		*functionEntity;
+	VariableEntity		*variableEntity;
+	/* Statement */
+	Statement			*statement;
+	/* Type */
+	Type				*typeVal;
+	/* Expression */
+	Expression			*expression;
 }
 /* Tokens
  * ------
@@ -50,18 +69,30 @@
 %token T_EXTENDS T_THIS T_NEW T_STATIC T_INSTANCEOF
 %token T_WHILE T_FOR T_IF T_ELSE T_RETURN T_BREAK
 %token T_PRINT T_READINTEGER T_READLINE
-%token T_NULL
 
-%token <identifier> T_IDENTIFIER
-%token <ival> T_INTCONSTANT
+/*%token <identifier> T_IDENTIFIER*/
+%token <ival> T_INTCONSTANT T_NULL
 %token <bval> T_BOOLCONSTANT
-%token <sval> T_STRINGCONSTANT
+%token <sval> T_STRINGCONSTANT T_IDENTIFIER
 %token <dval> T_DOUBLECONSTANT
 
 /* Non-terminal types
  * ------------------
  */
-/*%type <>*/
+/* List */
+ %type <entityList> Program Formals Fields VariablePlus
+ %type <exprList> Actuals ExprPlus
+ %type <stmtList> Stmts
+ /* Entity */
+ %type <entity> Field
+ %type <classEntity> ClassDef ExtendsQ
+ %type <functionEntity> FunctionDef
+ %type <variableEntity> VariableDef Variable
+ /* Statement */
+ %type <statement> StmtBlock Stmt SimpleStmt ForStmt WhileStmt IfStmt
+ %type <statement> ReturnStmt BreakStmt PrintStmt
+ %type <typeVal> Type
+ %type <expression> Expr BoolExpr LValue Call Constant
 
 /* Precedence and associativity
  * ----------------------------
@@ -87,136 +118,393 @@
 /* Rules
  * -----
  */
-Program     :  ClassDef	{
-				printf("Program : ClassDef\n");
+Program		:  ClassDef {
+				$$ = toplevel;
+				$$->push_back($1);
+				printf("Program: ClassDef\n");
 			}
-            |  Program ClassDef	{
-				printf("Program\n");
+            |  Program ClassDef {
+				$$ = $1;
+				$$->push_back($2);
+				printf("Program: Program ClassDef\n");
 			}
             ;
-VariableDef :  Variable ';' {printf("VariableDef\n");}
+VariableDef :  Variable ';' {
+				$$ = $1;
+				printf("VariableDef: Variable ;\n");
+			}
             ;
-Variable    :  Type T_IDENTIFIER	{printf("Variable\n");}
+Variable    :  Type T_IDENTIFIER {
+				$$ = new VariableEntity($2, $1);
+				printf("Variable: Type T_IDENTIFIER\n");
+			}
             ;
-Type        :  T_INT {printf("TYPE\n");}
-            |  T_DOUBLE {printf("TYPE\n");}
-            |  T_BOOL {printf("TYPE\n");}
-            |  T_STRING {printf("TYPE\n");}
-            |  T_VOID {printf("TYPE\n");}
-            |  T_CLASS T_IDENTIFIER {printf("TYPE\n");}
-            |  Type '[' ']' {printf("TYPE\n");}
+Type        :  T_INT {
+				$$ = new IntType();
+				printf("Type: T_INT\n");
+			}
+            |  T_DOUBLE {
+				$$ = new DoubleType();
+				printf("Type: T_DOUBLE\n");
+			}
+            |  T_BOOL {
+				$$ = new BooleanType();
+				printf("Type: T_BOOL\n");
+			}
+            |  T_STRING {
+				$$ = new StringType();
+				printf("Type: T_STRING\n");
+			}
+            |  T_VOID {
+				$$ = new VoidType();
+				printf("Type: T_VOID\n");
+			}
+            |  T_CLASS T_IDENTIFIER {
+				$$ = new ClassType($2);
+				printf("Type: T_CLASS T_IDENTIFIER\n");
+			}
+            |  Type '[' ']' {
+				$$ = new ArrayType($1);
+				printf("Type: Type '[' ']'\n");
+			}
             ;
-Formals     :  Variable {printf("Formals\n");}
-            |  Formals ',' Variable {printf("Formals\n");}
-            |  {printf("Formals\n");}
+Formals     :  VariablePlus{
+				$$ = $1;
+				printf("Formals: VariablePlus\n");
+			}
+            |  {
+				$$ = new list<Entity*>();
+				printf("Formals: (empty)\n");
+			}
             ;
-FunctionDef :  T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock {printf("FunctionDef\n");}
-            |  Type T_IDENTIFIER '(' Formals ')' StmtBlock {printf("FunctionDef\n");}
+VariablePlus:  Variable {
+				$$ = new list<Entity*>();
+				$$->push_back($1);
+				printf("VariablePlus: Variable\n");
+			}
+            |  VariablePlus ',' Variable {
+				$$ = $1;
+				$$->push_back($3);
+				printf("VariablePlus: VariablePlus ',' Variable\n");
+			}
+			;
+FunctionDef :  T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock {
+				$$ = new FunctionEntity($3, $2, $5, $7);
+				printf("FunctionDef: T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock\n");
+			}
+            |  Type T_IDENTIFIER '(' Formals ')' StmtBlock {
+				$$ = new FunctionEntity($2, $1, $4, $6);
+				printf("FunctionDef: Type T_IDENTIFIER '(' Formals ')' StmtBlock\n");
+			}
             ;
-/*
-ClassDef    :  T_CLASS T_IDENTIFIER T_EXTENDS T_IDENTIFIER '{' Fields '}'  {printf("ClassDef\n");}
-            |  T_CLASS T_IDENTIFIER '{' Fields '}'  {printf("ClassDef\n");}
+ClassDef    :  T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'  {
+				$$ = new ClassEntity($2, $3, $5);
+				printf("ClassDef: T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'\n");
+			}
             ;
-Fields      :  Field {printf("Fields\n");}
-            |  Fields Field {printf("Fields\n");}
-            |  {printf("Fields\n");}
+ExtendsQ	:  T_EXTENDS T_IDENTIFIER {
+				/* TODO: fix it during semantic analysis */
+				$$ = new ClassEntity($2, objectclass, new list<Entity*>());
+				printf("ExtendsQ: T_EXTENDS T_IDENTIFIER\n");
+			}
+			| {
+				$$ = objectclass;
+				printf("ExtendsQ: (empty)\n");
+			}
+			;
+Fields      :  Fields Field {
+				$$ = $1;
+				$$->push_back($2);
+				printf("Fields: Fields Field\n");
+			}
+			| {
+				$$ = new list<Entity*>();
+				printf("Fields: (empty)\n");
+			}
             ;
-*/
-ClassDef    :  T_CLASS T_IDENTIFIER T_EXTENDS T_IDENTIFIER '{' Fields '}'  {printf("ClassDef\n");}
-			|  T_CLASS T_IDENTIFIER T_EXTENDS T_IDENTIFIER '{' '}'  {printf("ClassDef\n");}
-            |  T_CLASS T_IDENTIFIER '{' Fields '}'  {printf("ClassDef\n");}
-			|  T_CLASS T_IDENTIFIER '{' '}'  {printf("ClassDef\n");}
+Field       :  VariableDef {
+				$$ = $1;
+				printf("Field: VariableDef\n");
+			}
+            |  FunctionDef {
+				$$ = $1;
+				printf("Field: FunctionDef\n");
+			}
             ;
-Fields      :  Field {printf("Fields\n");}
-            |  Fields Field {printf("Fields\n");}
+StmtBlock   :  '{' Stmts '}' {
+				$$ = new BlockStatement($2);
+				printf("StmtBlock: '{' Stmts '}'\n");
+			}
             ;
-
-Field       :  FunctionDef {printf("Field\n");}
-            |  VariableDef {printf("Field\n");}
+Stmts       :  Stmts Stmt {
+				$$ = $1;
+				$$->push_back($2);
+				printf("Stmts: Stmts Stmt\n");
+			}
+			|  {
+				$$ = new list<Statement*>();
+				printf("Stmts: (empty)\n");
+			}
             ;
-StmtBlock   :  '{' Stmts '}' {printf("StmtBlock\n");}
-            |  '{' '}' {printf("StmtBlock\n");}
+Stmt        :  VariableDef {
+				$$ = new DeclStatement($1);
+				printf("Stmt: VariableDef\n");
+			}
+            |  SimpleStmt ';' {
+				$$ = $1;
+				printf("Stmt: SimpleStmt ';'\n");
+			}
+            |  IfStmt {
+				$$ = $1;
+				printf("Stmt: IfStmt\n");
+			}
+            |  WhileStmt {
+				$$ = $1;
+				printf("Stmt: WhileStmt\n");
+			}
+            |  ForStmt {
+				$$ = $1;
+				printf("Stmt: ForStmt\n");
+			}
+            |  BreakStmt ';' {
+				$$ = $1;
+				printf("Stmt: BreakStmt ';'\n");
+			}
+            |  ReturnStmt ';' {
+				$$ = $1;
+				printf("Stmt: ReturnStmt ';'\n");
+			}
+            |  PrintStmt ';' {
+				$$ = $1;
+				printf("Stmt: PrintStmt ';'\n");
+			}
+            |  StmtBlock {
+				$$ = $1;
+				printf("Stmt: StmtBlock\n");
+			}
             ;
-Stmts       :  Stmt {printf("Stmts\n");}
-            |  Stmt Stmts {printf("Stmts\n");}
+SimpleStmt  :  LValue '=' Expr {
+				$$ = new AssignStatement($1, $3);
+				printf("SimpleStmt: LValue '=' Expr\n");
+			}
+            |  Call {
+				$$ = new CallStatement($1);
+				printf("SimpleStmt: Call\n");
+			}
+            |  {
+				$$ = new NullStatement();
+				printf("SimpleStmt: (empty)\n");
+			}
             ;
-Stmt        :  VariableDef {printf("Stmt\n");}
-            |  SimpleStmt ';' {printf("Stmt\n");}
-            |  IfStmt {printf("Stmt\n");}
-            |  WhileStmt {printf("Stmt\n");}
-            |  ForStmt {printf("Stmt\n");}
-            |  BreakStmt ';' {printf("Stmt\n");}
-            |  ReturnStmt ';' {printf("Stmt\n");}
-            |  PrintStmt ';' {printf("Stmt\n");}
-            |  StmtBlock {printf("Stmt\n");}
+LValue      :  Expr '.' T_IDENTIFIER {
+				$$ = new MemberAccess($1, $3);
+				printf("LValue: Expr '.' T_IDENTIFIER\n");
+			}
+            |  T_IDENTIFIER {
+				$$ = new MemberAccess((Expression*)NULL, $1);
+				printf("LValue: T_IDENTIFIER\n");
+			}
+            |  Expr '[' Expr ']' {
+				$$ = new ArrayAccess($1, $3);
+				printf("LValue: Expr '[' Expr ']'\n");
+			}
             ;
-SimpleStmt  :  LValue '=' Expr {printf("SimpleStmt\n");}
-            |  Call {printf("SimpleStmt\n");}
-            |  {printf("SimpleStmt\n");}
+Call        :  Expr '.' T_IDENTIFIER '(' Actuals ')' {
+				$$ = new FunctionInvocation($1, $3, $5);
+				printf("Call: Expr '.' T_IDENTIFIER '(' Actuals ')'\n");
+			}
+            |  T_IDENTIFIER '(' Actuals ')' {
+				$$ = new FunctionInvocation(new NullExpression(), $1, $3);
+				printf("Call: T_IDENTIFIER '(' Actuals ')'\n");
+			}
             ;
-LValue      :  Expr '.' T_IDENTIFIER {printf("LValue\n");}
-            |  T_IDENTIFIER {printf("LValue\n");}
-            |  Expr '[' Expr ']' {printf("LValue\n");}
+Actuals     :  ExprPlus{
+				$$ = $1;
+				printf("Actuals: ExprPlus\n");
+			}
+            |  {
+				$$ = new list<Expression*>();
+				printf("Actuals: (empty)\n");
+			}
             ;
-Call        :  Expr '.' T_IDENTIFIER '(' Actuals ')' {printf("Call\n");}
-            |  T_IDENTIFIER '(' Actuals ')' {printf("Call\n");}
+ExprPlus  :  Expr {
+				$$ = new list<Expression*>();
+				printf("ExprPlus: Expr\n");
+			}
+            |  ExprPlus ',' Expr {
+				$$ = $1;
+				$$->push_back($3);
+				printf("ExprPlus: ExprPlus ',' Expr\n");
+			}
+			;
+ForStmt     :  T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt {
+				$$ = new ForStatement($3, $5, $7, $9);
+				printf("ForStmt: T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt\n");
+			}
             ;
-Actuals     :  Expr {printf("Actuals\n");}
-            |  Actuals ',' Expr {printf("Actuals\n");}
-            |  {printf("Actuals\n");}
+WhileStmt   :  T_WHILE '(' BoolExpr ')' Stmt {
+				$$ = new WhileStatement($3, $5);
+				printf("WhileStmt: T_WHILE '(' BoolExpr ')' Stmt\n");
+			}
             ;
-ForStmt     :  T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt {printf("ForStmt\n");}
+IfStmt      :  T_IF '(' BoolExpr ')' Stmt %prec T_IFX {
+				$$ = new IfStatement($3, $5, new NullStatement());
+				printf("IfStmt: T_IF '(' BoolExpr ')' Stmt %%prec T_IFX\n");
+			}
+            |  T_IF '(' BoolExpr ')' Stmt T_ELSE Stmt {
+				$$ = new IfStatement($3, $5, $7);
+				printf("IfStmt: T_IF '(' BoolExpr ')' Stmt T_ELSE Stmt\n");
+			}
             ;
-WhileStmt   :  T_WHILE '(' BoolExpr ')' Stmt {printf("WhileStmt\n");}
+ReturnStmt  :  T_RETURN {
+				$$ = new ReturnStatement(new NullExpression());
+				printf("ReturnStmt: T_RETURN\n");
+			}
+            |  T_RETURN Expr {
+				$$ = new ReturnStatement($2);
+				printf("ReturnStmt: T_RETURN Expr\n");
+			}
             ;
-IfStmt      :  T_IF '(' BoolExpr ')' Stmt %prec T_IFX {printf("IfStmt\n");}
-            |  T_IF '(' BoolExpr ')' Stmt T_ELSE Stmt {printf("IfStmt\n");}
+BreakStmt   :  T_BREAK {
+				$$ = new BreakStatement();
+				printf("BreakStmt: T_BREAK\n");
+			}
             ;
-ReturnStmt  :  T_RETURN {printf("ReturnStmt\n");}
-            |  T_RETURN Expr {printf("ReturnStmt\n");}
+PrintStmt   :  T_PRINT '(' ExprPlus ')' {
+				$$ = new PrintStatement($3);
+				printf("PrintStmt: T_PRINT '(' ExprPlus ')'\n");
+			}
             ;
-BreakStmt   :  T_BREAK {printf("BreakStmt\n");}
+BoolExpr    :  Expr {
+				$$ = $1;
+				printf("BoolExpr: Expr\n");
+			}
             ;
-PrintStmt   :  T_PRINT '(' Exprs ')' {printf("PrintStmt\n");}
+Expr        :  Constant {
+				$$ = $1;
+				printf("Expr: Constant\n");
+			}
+            |  LValue {
+				$$ = $1;
+				printf("Expr: LValue\n");
+			}
+            |  T_THIS {
+				$$ = new ThisExpression();
+				printf("Expr: T_THIS\n");
+			}
+            |  Call {
+				$$ = $1;
+				printf("Expr: Call\n");
+			}
+            |  '(' Expr ')' {
+				$$ = $2;
+				printf("Expr: '(' Expr ')'\n");
+			}
+            |  Expr '+' Expr {
+				$$ = new BinaryExpression(ADD, $1, $3);
+				printf("Expr: Expr '+' Expr\n");
+			}
+            |  Expr '-' Expr {
+				$$ = new BinaryExpression(SUB, $1, $3);
+				printf("Expr: Expr '-' Expr\n");
+			}
+            |  Expr '*' Expr {
+				$$ = new BinaryExpression(MUL, $1, $3);
+				printf("Expr: Expr '*' Expr\n");
+			}
+            |  Expr '/' Expr {
+				$$ = new BinaryExpression(DIV, $1, $3);
+				printf("Expr: Expr '/' Expr\n");
+			}
+            |  Expr '%' Expr {
+				$$ = new BinaryExpression(MOD, $1, $3);
+				printf("Expr: Expr '%%' Expr\n");
+			}
+            |  '-' Expr {
+				$$ = new UnaryExpression(UMINUS, $2);
+				printf("Expr: '-' Expr\n");
+			}
+            |  Expr '<' Expr {
+				$$ = new BinaryExpression(LT, $1, $3);
+				printf("Expr: Expr '<' Expr\n");
+			}
+            |  Expr T_LET Expr {
+				$$ = new BinaryExpression(LE, $1, $3);
+				printf("Expr: Expr T_LET Expr\n");
+			}
+            |  Expr '>' Expr {
+				$$ = new BinaryExpression(GT, $1, $3);
+				printf("Expr: Expr '>' Expr\n");
+			}
+            |  Expr T_HET Expr {
+				$$ = new BinaryExpression(GE, $1, $3);
+				printf("Expr: Expr T_HET Expr\n");
+			}
+            |  Expr T_EQU Expr {
+				$$ = new BinaryExpression(EQ, $1, $3);
+				printf("Expr: Expr T_EQU Expr\n");
+			}
+            |  Expr T_UEQU Expr {
+				$$ = new BinaryExpression(NEQ, $1, $3);
+				printf("Expr: Expr T_UEQU Expr\n");
+			}
+            |  Expr T_AND Expr {
+				$$ = new BinaryExpression(AND, $1, $3);
+				printf("Expr: Expr T_AND Expr\n");
+			}
+            |  Expr T_OR Expr {
+				$$ = new BinaryExpression(OR, $1, $3);
+				printf("Expr: Expr T_OR Expr\n");
+			}
+            |  '!' Expr {
+				$$ = new UnaryExpression(NOT, $2);
+				printf("Expr: '!' Expr\n");
+			}
+            |  T_READINTEGER '(' ')' {
+				$$ = new ReadIntegerExpression();
+				printf("Expr: T_READINTEGER '(' ')'\n");
+			}
+            |  T_READLINE '(' ')' {
+				$$ = new ReadLineExpression();
+				printf("Expr:  T_READLINE '(' ')'\n");
+			}
+            |  T_NEW T_IDENTIFIER '(' ')' {
+				$$ = new NewInstance($2);
+				printf("Expr: T_NEW T_IDENTIFIER '(' ')'\n");
+			}
+            |  T_NEW Type '[' Expr ']' {
+				$$ = new NewArrayInstance($4, $2);
+				printf("Expr: T_NEW Type '[' Expr ']'\n");
+			}
+            |  T_INSTANCEOF '(' Expr ',' T_IDENTIFIER ')' {
+				$$ = new InstanceofExpr($3, $5);
+				printf("Expr: T_INSTANCEOF '(' Expr ',' T_IDENTIFIER ')'\n");
+			}
+            |  '(' T_CLASS T_IDENTIFIER ')' Expr {
+				$$ = new TranslateExpr($3, $5);
+				printf("Expr: '(' T_CLASS T_IDENTIFIER ')' Expr\n");
+			}
             ;
-Exprs       :  Expr {printf("Exprs\n");}
-            |  Exprs ',' Expr {printf("Exprs\n");}
-            |  {printf("Exprs\n");}
-            ;
-BoolExpr    :  Expr {printf("BoolExpr\n");}
-            ;
-Expr        :  Constant {printf("Expr\n");}
-            |  LValue {printf("Expr\n");}
-            |  T_THIS {printf("Expr\n");}
-            |  Call {printf("Expr\n");}
-            |  '(' Expr ')' {printf("Expr\n");}
-            |  Expr '+' Expr {printf("Expr\n");}
-            |  Expr '-' Expr {printf("Expr\n");}
-            |  Expr '*' Expr {printf("Expr\n");}
-            |  Expr '/' Expr {printf("Expr\n");}
-            |  Expr '%' Expr {printf("Expr\n");}
-            |  '-' Expr {printf("Expr\n");}
-            |  Expr '<' Expr {printf("Expr\n");}
-            |  Expr T_LET Expr {printf("Expr\n");}
-            |  Expr '>' Expr {printf("Expr\n");}
-            |  Expr T_HET Expr {printf("Expr\n");}
-            |  Expr T_EQU Expr {printf("Expr\n");}
-            |  Expr T_UEQU Expr {printf("Expr\n");}
-            |  Expr T_AND Expr {printf("Expr\n");}
-            |  Expr T_OR Expr {printf("Expr\n");}
-            |  '!' Expr {printf("Expr\n");}
-            |  T_READINTEGER '(' ')' {printf("Expr\n");}
-            |  T_READLINE '(' ')' {printf("Expr\n");}
-            |  T_NEW T_IDENTIFIER '(' ')' {printf("Expr\n");}
-            |  T_NEW Type '[' Expr ']' {printf("Expr\n");}
-            |  T_INSTANCEOF '(' Expr ',' T_IDENTIFIER ')' {printf("Expr\n");}
-            |  '(' T_CLASS T_IDENTIFIER ')' Expr {printf("Expr\n");}
-            ;
-Constant    :  T_INTCONSTANT {printf("Constant\n");}
-            |  T_DOUBLECONSTANT {printf("Constant\n");}
-            |  T_BOOLCONSTANT {printf("Constant\n");}
-            |  T_STRINGCONSTANT {printf("Constant\n");}
-            |  T_NULL {printf("Constant\n");}
+Constant    :  T_INTCONSTANT {
+				$$ = new IntegerConstant($1);
+				printf("Constant: T_INTCONSTANT\n");
+			}
+            |  T_DOUBLECONSTANT {
+				$$ = new DoubleConstant($1);
+				printf("Constant: T_DOUBLECONSTANT\n");
+			}
+            |  T_BOOLCONSTANT {
+				$$ = new BooleanConstant($1);
+				printf("Constant: T_BOOLCONSTANT\n");
+			}
+            |  T_STRINGCONSTANT {
+				$$ = new StringConstant($1);
+				printf("Constant: T_STRINGCONSTANT\n");
+			}
+            |  T_NULL {
+				$$ = new NullConstant();
+				printf("Constant: T_NULL\n");
+			}
             ;
 %%
 
@@ -225,20 +513,13 @@ void yyerror(const char *s)
 	printf("\nError: (lineno: %d) %s encountered at %s\n", yylineno, s, yytext);
 }
 
-/*void yyerror(char *s, ...){
-	va_list ap;
-	va_start(ap, s);
-
-	if(yylloc.first_line)
-		fprintf(stderr, "%d.%d-%d.%d: error: ", yyllc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column);
-	vprintf(stderr, s, ap);
-	fprintf(stderr, "\n");
-}*/
-
 int main(){
 	/*yydebug = 1;*/
 	yydebug = 0;
     yyparse();
 	cout << endl;
+	for (auto it = toplevel->begin(); it != toplevel->end(); ++it){
+		(*it)->print();
+	}
     return 0;
 }
