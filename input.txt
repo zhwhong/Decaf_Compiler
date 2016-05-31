@@ -3,24 +3,35 @@
    test multiple line comments
 */
 class Main{
-    static void main(){
+    static int main(){
         int i;
         double d;
         string str;
         class Mac powerbook;
+        str = new Computer();
+        str = new class Computer [10];
         i = 9;
         d = 0.119;
+        d = 12.56e+2;
+        i = 0xff;
         str = "Hello World!";
+        while (i < 5){
+    		str = ReadLine();
+    	}
         powerbook = new Mac();
         powerbook.Crash(2);
-        if(i < 15)
+        if(i < 15){
             i = i + 1;
+            break;
+        }
         else
-            i = i - 1;
+            i = i % 1;
+        return i;
     }
 }
 class Computer{
     int cpu;
+    int [] s;
     void Crash(int numTimes){
         int i;
         for(i = 0; i < numTimes; i = i + 1)

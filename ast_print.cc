@@ -86,7 +86,6 @@ void DeclStatement::print() {
 	// 	}
 	// }
 	var_list->print();
-	// cout << ";"<< endl;
 }
 
 // Print method for BreakStatement
@@ -194,7 +193,9 @@ void UnaryExpression::print() {
 void NewArrayInstance::print() {
 	cout << "new [";
 	type->print();
-	cout << ", " << len << "]" << endl;
+	cout << ", ";
+	len->print();
+	cout << "]" << endl;
 }
 
 // Print method for NewInstance
