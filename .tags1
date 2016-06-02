@@ -1,0 +1,34 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Program	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Program		:  ClassDef {$/;"	label	line:121
+VariableDef	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^VariableDef :  Variable ';' {$/;"	label	line:132
+Variable	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Variable    :  Type T_IDENTIFIER {$/;"	label	line:137
+Type	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Type        :  T_INT {$/;"	label	line:142
+Formals	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Formals     :  VariablePlus{$/;"	label	line:171
+VariablePlus	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^VariablePlus:  Variable {$/;"	label	line:180
+FunctionDef	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^FunctionDef :  T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock {$/;"	label	line:191
+ClassDef	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^ClassDef    :  T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'  {$/;"	label	line:200
+ExtendsQ	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^ExtendsQ	:  T_EXTENDS T_IDENTIFIER {$/;"	label	line:205
+Fields	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Fields      :  Fields Field {$/;"	label	line:215
+Field	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Field       :  VariableDef {$/;"	label	line:225
+StmtBlock	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^StmtBlock   :  '{' Stmts '}' {$/;"	label	line:234
+Stmts	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Stmts       :  Stmts Stmt {$/;"	label	line:239
+Stmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Stmt        :  VariableDef {$/;"	label	line:249
+SimpleStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^SimpleStmt  :  LValue '=' Expr {$/;"	label	line:286
+LValue	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^LValue      :  Expr '.' T_IDENTIFIER {$/;"	label	line:299
+Call	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Call        :  Expr '.' T_IDENTIFIER '(' Actuals ')' {$/;"	label	line:312
+Actuals	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Actuals     :  ExprPlus{$/;"	label	line:321
+ExprPlus	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^ExprPlus  :  Expr {$/;"	label	line:330
+ForStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^ForStmt     :  T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt {$/;"	label	line:340
+WhileStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^WhileStmt   :  T_WHILE '(' BoolExpr ')' Stmt {$/;"	label	line:345
+IfStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^IfStmt      :  T_IF '(' BoolExpr ')' Stmt %prec T_IFX {$/;"	label	line:350
+ReturnStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^ReturnStmt  :  T_RETURN {$/;"	label	line:359
+BreakStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^BreakStmt   :  T_BREAK {$/;"	label	line:368
+PrintStmt	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^PrintStmt   :  T_PRINT '(' ExprPlus ')' {$/;"	label	line:373
+BoolExpr	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^BoolExpr    :  Expr {$/;"	label	line:378
+Expr	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Expr        :  Constant {$/;"	label	line:383
+Constant	/home/shsf-hzw/Compile/Decaf_Compiler/decaf.y	/^Constant    :  T_INTCONSTANT {$/;"	label	line:488

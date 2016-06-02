@@ -2,6 +2,21 @@
 /* class Main
    test multiple line comments
 */
+class Computer{
+    int cpu;
+    int [] s;
+    void Crash(int numTimes){
+        int i;
+        for(i = 0; i < numTimes; i = i + 1)
+            Print("sad\n");
+    }
+}
+class Mac extends Computer{
+    int mouse;
+    void Crash(int numTimes){
+        Print("ack\n");
+    }
+}
 class Main{
     static int main(){
         int i;
@@ -27,20 +42,5 @@ class Main{
         else
             i = i % 1;
         return i;
-    }
-}
-class Computer{
-    int cpu;
-    int [] s;
-    void Crash(int numTimes){
-        int i;
-        for(i = 0; i < numTimes; i = i + 1)
-            Print("sad\n");
-    }
-}
-class Mac extends Computer{
-    int mouse;
-    void Crash(int numTimes){
-        Print("ack\n");
     }
 }
