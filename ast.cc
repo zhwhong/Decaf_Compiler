@@ -276,8 +276,9 @@ NewArrayInstance::~NewArrayInstance() {}
 //
 ////////////////////////////////
 
-NewInstance::NewInstance(char* _class_name)
-  : class_name(_class_name)
+NewInstance::NewInstance(char* _class_name, ClassEntity* _classEntity)
+	:	class_name(_class_name),
+		classEntity(_classEntity)
 {
     lineno = yylineno;
 }
@@ -445,6 +446,7 @@ NullConstant::~NullConstant() {}
 
 IntType::IntType() {
 	kind = INT_TYPE;
+	dimension = 0;
 }
 
 IntType::~IntType() {}
@@ -457,6 +459,7 @@ IntType::~IntType() {}
 
 DoubleType::DoubleType() {
 	kind = DOUBLE_TYPE;
+	dimension = 0;
 }
 
 DoubleType::~DoubleType() {}
@@ -470,6 +473,7 @@ DoubleType::~DoubleType() {}
 
 BooleanType::BooleanType() {
 	kind = BOOL_TYPE;
+	dimension = 0;
 }
 
 BooleanType::~BooleanType() {}
@@ -482,6 +486,7 @@ BooleanType::~BooleanType() {}
 
 StringType::StringType() {
 	kind = STRING_TYPE;
+	dimension = 0;
 }
 
 StringType::~StringType() {}
@@ -494,6 +499,7 @@ StringType::~StringType() {}
 
 VoidType::VoidType() {
 	kind = VOID_TYPE;
+	dimension = 0;
 }
 
 VoidType::~VoidType() {}
@@ -505,10 +511,11 @@ VoidType::~VoidType() {}
 //
 ////////////////////////////////
 
-ClassType::ClassType(char* _name)
-	:	name(_name)
+ClassType::ClassType(ClassEntity* _classtype)
+	:	classtype(_classtype)
 {
 	kind = CLASS_TYPE;
+	dimension = 0;
 }
 
 ClassType::~ClassType() {}
@@ -523,6 +530,7 @@ InstanceType::InstanceType(ClassEntity* _classtype)
 	:	classtype(_classtype)
 {
   kind = INSTANCE_TYPE;
+  dimension = 0;
 }
 
 InstanceType::~InstanceType() {}
@@ -535,6 +543,7 @@ InstanceType::~InstanceType() {}
 
 ErrorType::ErrorType() {
 	kind = ERROR_TYPE;
+	dimension = 0;
 }
 
 ErrorType::~ErrorType() {}
@@ -549,6 +558,7 @@ ArrayType::ArrayType(Type* _elementtype)
 	:	elementtype(_elementtype)
 {
 	kind = ARRAY_TYPE;
+	dimension = _elementtype->dimension + 1;
 }
 
 ArrayType::~ArrayType() {}
@@ -561,6 +571,7 @@ ArrayType::~ArrayType() {}
 
 UniverseType::UniverseType() {
 	kind = UNIVERSE_TYPE;
+	dimension = 0;
 }
 
 UniverseType::~UniverseType() {}
@@ -574,6 +585,7 @@ UniverseType::~UniverseType() {}
 
 NullType::NullType() {
 	kind = NULL_TYPE;
+	dimension = 0;
 }
 
 NullType::~NullType() {}

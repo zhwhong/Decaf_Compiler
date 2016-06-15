@@ -11,7 +11,7 @@ YACC = bison
 YFLAGS = -t -d -v -g
 BIN = main
 
-OBJECTS = ast.o ast_print.o ast_symbols.o symbols.o \
+OBJECTS = ast.o ast_print.o ast_symbols.o symbols.o types.o typecheck.o driver.o\
 		decaf.tab.o decaf.yy.o
 
 all: $(OBJECTS)

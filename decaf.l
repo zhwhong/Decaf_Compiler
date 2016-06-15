@@ -29,6 +29,7 @@ comment     {comment1}|{comment2}
 operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
 /*delimiter [,;\{\}] */
 
+/* %option c++ */
 %option yylineno
 %option never-interactive
 %option noyywrap
@@ -67,12 +68,39 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
 "!"			    {return yytext[0];}
 {operator}      {return yytext[0];}
 
- /* -------------------- Constants ------------------------------ */
- "true"|"false" {
+"true"|"false" {
      yylval.bval = (yytext[0] == 't');
      return T_BOOLCONSTANT;
 }
 
+ /* --------------- Comments and Whitespace -------------------- */
+{comment} {
+   printf("%2d: comment:\t %s\n", yylineno, yytext);
+}
+
+ /* -------------------- Identifiers --------------------------- */
+ /*{identifier} {
+   int len = strlen(yytext);
+   if (len > MaxIdentLen){
+       printf("ReportError: identifier's length is more than %d!\n", MaxIdentLen);
+       strncpy(yylval.identifier, yytext, MaxIdentLen);
+       yylval.identifier[MaxIdentLen] = '\0';
+   }
+   else{
+       strncpy(yylval.identifier, yytext, len);
+       yylval.identifier[len] = '\0';
+   }
+   printf("%2d: identifier:\t %s\n", yylineno, yytext);
+   return T_IDENTIFIER;
+}*/
+
+{identifier} {
+   printf("%2d: identifier:\t %s\n", yylineno, yytext);
+   yylval.sval = strdup(yytext);
+   return T_IDENTIFIER;
+}
+
+ /* -------------------- Constants ------------------------------ */
 {dec_num} {
     yylval.ival = strtol(yytext, NULL, 10);
     printf("%2d: dec_num:\t %d\n", yylineno, yylval.ival);
@@ -108,36 +136,19 @@ operator    [\+\-\*\/\%\<\>\=\,\;\.\[\]\(\)\{\}]
     yylval.sval = strdup(yytext);
     return T_STRINGCONSTANT;
 }
- /* -------------------- Identifiers --------------------------- */
- /*{identifier} {
-    int len = strlen(yytext);
-    if (len > MaxIdentLen){
-        printf("ReportError: identifier's length is more than %d!\n", MaxIdentLen);
-        strncpy(yylval.identifier, yytext, MaxIdentLen);
-        yylval.identifier[MaxIdentLen] = '\0';
-    }
-    else{
-        strncpy(yylval.identifier, yytext, len);
-        yylval.identifier[len] = '\0';
-    }
-    printf("%2d: identifier:\t %s\n", yylineno, yytext);
-    return T_IDENTIFIER;
-}*/
-
-{identifier} {
-	printf("%2d: identifier:\t %s\n", yylineno, yytext);
-	yylval.sval = strdup(yytext);
-	return T_IDENTIFIER;
-}
- /* --------------- Comments and Whitespace -------------------- */
-{comment} {
-    printf("%2d: comment:\t %s\n", yylineno, yytext);
-}
 
 {whitespace} {;}
+
  /* -------------------- Default rule (error) ------------------ */
 . {
     printf("ReportError: Unrecognized characters!\n");
 }
 
 %%
+
+
+// int main(int argc, char const *argv[])
+// {
+// 	yylex();
+// 	return 0;
+// }

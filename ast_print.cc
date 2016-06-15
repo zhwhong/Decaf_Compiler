@@ -3,10 +3,12 @@
 
 // Print method for IfStatement
 void IfStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "if (";
 	expr->print();
 	cout << ")" << endl;
 	thenpart->print();
+	printf("%*s", level_number*2, "");
 	cout << "else" << endl;
 	if (elsepart == NULL)
 		cout << "empty" << endl;
@@ -16,6 +18,7 @@ void IfStatement::print() {
 
 // Print method for WhileStatement
 void WhileStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "while (";
 	expr->print();
 	cout << ")" << endl;
@@ -24,10 +27,11 @@ void WhileStatement::print() {
 
 // Print method for ForStatement
 void ForStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "for (";
 	if (init != NULL)
 		init->print();
-	// cout << ";";
+	cout << ";";
 	guard->print();
 	cout << ";";
 	if (update != NULL)
@@ -38,6 +42,7 @@ void ForStatement::print() {
 
 // Print method for ReturnStatement
 void ReturnStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "return ";
 	if (expr != NULL)
 		expr->print();
@@ -46,16 +51,19 @@ void ReturnStatement::print() {
 
 // Print method for BlockStatement
 void BlockStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "{" << endl;
 	// for(auto it = decl_list->begin(); it != decl_list->end(); ++it)
 	// 	(*it)->print();
 	for(auto it = stmt_list->begin(); it != stmt_list->end(); ++it)
 		(*it)->print();
+	printf("%*s", level_number*2, "");
 	cout << "}" << endl;
 }
 
 // Print method for ExprStatement
 void ExprStatement::print() {
+	printf("%*s", level_number*2, "");
 	expr->print();
 	cout << ";" << endl;
 }
@@ -63,6 +71,7 @@ void ExprStatement::print() {
 
 // Print method for PrintStatement
 void PrintStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "Print(";
 	for (auto it = exprs->begin(); it != exprs->end(); ++it){
 		if (it == exprs->begin())
@@ -77,36 +86,34 @@ void PrintStatement::print() {
 
 // Print method for DeclStatement
 void DeclStatement::print() {
-	// for(auto it = var_list->begin(); it != var_list->end();) {
-	// 	if (it == var_list->begin())
-	// 		(*it)->print();
-	// 	else {
-	// 		cout << ",";
-	// 		(*it)->print();
-	// 	}
-	// }
+	printf("%*s", level_number*2, "");
 	var_list->print();
+	//cout << ";"<< endl;
 }
 
 // Print method for BreakStatement
 void BreakStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "break;" << endl;
 }
 
 // Print method for AssignStatement
 void AssignStatement::print() {
+	printf("%*s", level_number*2, "");
 	lhs->print();
 	cout << " = ";
 	rhs->print();
-	cout << ";";
+	cout << ";" << endl;
 }
 
 void CallStatement::print() {
+	printf("%*s", level_number*2, "");
 	exprs->print();
 	cout << ";" << endl;
 }
 
 void NullStatement::print() {
+	printf("%*s", level_number*2, "");
 	cout << "null";
 }
 
@@ -292,12 +299,12 @@ void VoidType::print() {
 
 // Print method for ClassType
 void ClassType::print() {
-	cout << name;
+	classtype->print();
 }
 
 // Print method for InstanceType
 void InstanceType::print() {
-	classtype->print();
+	cout << "class " << classtype->name;
 }
 
 // Print method for ErrorType
@@ -308,7 +315,7 @@ void ErrorType::print() {
 // Print method for ArrayType
 void ArrayType::print() {
 	elementtype->print();
-	cout << "[]";
+	cout << "[" << dimension << "]";
 }
 
 // Print method for UniverseType

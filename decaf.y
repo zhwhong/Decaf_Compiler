@@ -4,9 +4,9 @@
  */
 %{
 	#include "decaf.h"
-	#include "ast.h"
 	#include <iostream>
 	#include <list>
+	#include "ast.h"
 
 	/*#ifdef NULL
 		#undef NULL
@@ -28,7 +28,12 @@
 		}
 	}
 	void yyerror(const char *s);
+	void yyerror(const char *s)
+	{
+		printf("\nError: (lineno: %d) %s encountered at %s\n", yylineno, s, yytext);
+	}
 
+	EntityTable *global_symtab = new EntityTable();
 	list<Entity*>* toplevel = new list<Entity*>();
 	ClassEntity* objectclass = new ClassEntity("Object", (ClassEntity*)NULL, new list<Entity*>());
 %}
@@ -114,6 +119,9 @@
 %nonassoc T_ELSE
 
 %debug
+%glr-parser
+/* %expect-rr 1 */
+
 %%
 /* Rules
  * -----
@@ -135,6 +143,15 @@ VariableDef :  Variable ';' {
 			}
             ;
 Variable    :  Type T_IDENTIFIER {
+				bool current;
+				//printf("before into find_entity\n");
+				Entity* entity = global_symtab->find_entity($2, VARIABLE_ENTITY, &current);
+				//printf("after  into find_entity\n");
+				VariableEntity* variable = dynamic_cast<VariableEntity*>(entity);
+				if (variable && current) {
+			/* 						yyerror("Redefinition of variable name"); */
+					printf("  Redefined variable name: %s\n", $2);
+				}
 				$$ = new VariableEntity($2, $1);
 				printf("Variable: Type T_IDENTIFIER\n");
 			}
@@ -160,7 +177,17 @@ Type        :  T_INT {
 				printf("Type: T_VOID\n");
 			}
             |  T_CLASS T_IDENTIFIER {
-				$$ = new ClassType($2);
+				bool current;
+				Entity* entity = global_symtab->find_entity($2, CLASS_ENTITY, &current);
+				ClassEntity* classEntity = dynamic_cast<ClassEntity*>(entity);
+				if (!classEntity) {
+/* 						yyerror("Undefined class");      */
+					printf("  Undefined class name: %s\n", $2);
+					$$ = new ErrorType();
+				} else {
+					$$ = new InstanceType(classEntity);
+				}
+				/*$$ = new ClassType($2);*/
 				printf("Type: T_CLASS T_IDENTIFIER\n");
 			}
             |  Type '[' ']' {
@@ -192,19 +219,48 @@ FunctionDef :  T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock {
 				$$ = new FunctionEntity($3, $2, $5, $7);
 				printf("FunctionDef: T_STATIC Type T_IDENTIFIER '(' Formals ')' StmtBlock\n");
 			}
-            |  Type T_IDENTIFIER '(' Formals ')' StmtBlock {
-				$$ = new FunctionEntity($2, $1, $4, $6);
-				printf("FunctionDef: Type T_IDENTIFIER '(' Formals ')' StmtBlock\n");
+            |  Type T_IDENTIFIER {
+					$<functionEntity>$ = new FunctionEntity($2, $1, nullptr, nullptr);
+					global_symtab->enter_block();
+			   }'(' Formals ')' StmtBlock {
+				    $$ = $<functionEntity>3;
+				    $$->formal_params = $5;
+				    $$->function_body = $7;
+				    global_symtab->leave_block();
+					/*$$ = new FunctionEntity($2, $1, $4, $6);*/
+					printf("FunctionDef: Type T_IDENTIFIER '(' Formals ')' StmtBlock\n");
 			}
             ;
-ClassDef    :  T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'  {
-				$$ = new ClassEntity($2, $3, $5);
-				printf("ClassDef: T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'\n");
+ClassDef    :  T_CLASS T_IDENTIFIER {
+					bool current;
+					Entity* entity = global_symtab->find_entity($2, CLASS_ENTITY, &current);
+					ClassEntity* classEntity = dynamic_cast<ClassEntity*>(entity);
+					if (classEntity){
+				/* 						yyerror("Redefinition of class"); */
+						printf("  Redefined class name: %s\n", $2);
+					}
+					$<classEntity>$ = new ClassEntity($2, nullptr, nullptr);
+					global_symtab->enter_block();
+			   }
+			   ExtendsQ '{' Fields '}'  {
+				    $$ = $<classEntity>3;
+				    $$->superclass = $4;
+				    $$->class_members = $6;
+				    global_symtab->leave_block();
+					/*$$ = new ClassEntity($2, $3, $5);*/
+					printf("ClassDef: T_CLASS T_IDENTIFIER ExtendsQ '{' Fields '}'\n");
 			}
             ;
 ExtendsQ	:  T_EXTENDS T_IDENTIFIER {
-				/* TODO: fix it during semantic analysis */
-				$$ = new ClassEntity($2, objectclass, new list<Entity*>());
+					bool current;
+					Entity* entity = global_symtab->find_entity($2, CLASS_ENTITY, &current);
+					ClassEntity* superclass = dynamic_cast<ClassEntity*>(entity);
+					if (!superclass){
+				/* 						yyerror("Undeclared superclass"); */
+						printf("  Undeclared superclass name: %s\n", $2);
+					}
+					$$ = superclass;
+				/*$$ = new ClassEntity($2, objectclass, new list<Entity*>());*/
 				printf("ExtendsQ: T_EXTENDS T_IDENTIFIER\n");
 			}
 			| {
@@ -231,8 +287,12 @@ Field       :  VariableDef {
 				printf("Field: FunctionDef\n");
 			}
             ;
-StmtBlock   :  '{' Stmts '}' {
-				$$ = new BlockStatement($2);
+StmtBlock   :  {
+				global_symtab->enter_block();
+			} '{' Stmts '}' {
+				$$ = new BlockStatement($3);
+				$$->level_number = global_symtab->level;
+				global_symtab->leave_block();
 				printf("StmtBlock: '{' Stmts '}'\n");
 			}
             ;
@@ -248,6 +308,7 @@ Stmts       :  Stmts Stmt {
             ;
 Stmt        :  VariableDef {
 				$$ = new DeclStatement($1);
+				$$->level_number = global_symtab->level;
 				printf("Stmt: VariableDef\n");
 			}
             |  SimpleStmt ';' {
@@ -301,7 +362,26 @@ LValue      :  Expr '.' T_IDENTIFIER {
 				printf("LValue: Expr '.' T_IDENTIFIER\n");
 			}
             |  T_IDENTIFIER {
-				$$ = new MemberAccess((Expression*)NULL, $1);
+				bool current;
+				Entity* entity = global_symtab->find_entity($1, VARIABLE_ENTITY, &current);
+				if (entity && current){
+					// local variable
+					VariableEntity* local = dynamic_cast<VariableEntity*>(entity);
+					$$ = new IdExpression(local);
+				} else if (entity = global_symtab->find_entity($1, CLASS_ENTITY, &current)){
+					// class variable
+					ClassEntity* classEntity = dynamic_cast<ClassEntity*>(entity);
+					$$ = new IdExpression(classEntity);
+				} else if (entity = global_symtab->find_entity($1, VARIABLE_ENTITY, &current)){
+					// outter variable
+					VariableEntity* variable = dynamic_cast<VariableEntity*>(entity);
+					$$ = new IdExpression(variable);
+				} else {
+					yyerror("Undefined variable");
+					printf("  Undefined variable name: %s\n", $1);
+					$$ = new MemberAccess(new ThisExpression(), $1);
+				}
+				/*$$ = new MemberAccess((Expression*)NULL, $1);*/
 				printf("LValue: T_IDENTIFIER\n");
 			}
             |  Expr '[' Expr ']' {
@@ -339,39 +419,47 @@ ExprPlus  :  Expr {
 			;
 ForStmt     :  T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt {
 				$$ = new ForStatement($3, $5, $7, $9);
+				$$->level_number = global_symtab->level;
 				printf("ForStmt: T_FOR '(' SimpleStmt ';' BoolExpr ';' SimpleStmt ')' Stmt\n");
 			}
             ;
 WhileStmt   :  T_WHILE '(' BoolExpr ')' Stmt {
 				$$ = new WhileStatement($3, $5);
+				$$->level_number = global_symtab->level;
 				printf("WhileStmt: T_WHILE '(' BoolExpr ')' Stmt\n");
 			}
             ;
 IfStmt      :  T_IF '(' BoolExpr ')' Stmt %prec T_IFX {
 				$$ = new IfStatement($3, $5, new NullStatement());
+				$$->level_number = global_symtab->level;
 				printf("IfStmt: T_IF '(' BoolExpr ')' Stmt %%prec T_IFX\n");
 			}
             |  T_IF '(' BoolExpr ')' Stmt T_ELSE Stmt {
 				$$ = new IfStatement($3, $5, $7);
+				$$->level_number = global_symtab->level;
 				printf("IfStmt: T_IF '(' BoolExpr ')' Stmt T_ELSE Stmt\n");
 			}
             ;
 ReturnStmt  :  T_RETURN {
 				$$ = new ReturnStatement(new NullExpression());
+				$$->level_number = global_symtab->level;
 				printf("ReturnStmt: T_RETURN\n");
 			}
             |  T_RETURN Expr {
 				$$ = new ReturnStatement($2);
+				$$->level_number = global_symtab->level;
 				printf("ReturnStmt: T_RETURN Expr\n");
 			}
             ;
 BreakStmt   :  T_BREAK {
 				$$ = new BreakStatement();
+				$$->level_number = global_symtab->level;
 				printf("BreakStmt: T_BREAK\n");
 			}
             ;
 PrintStmt   :  T_PRINT '(' ExprPlus ')' {
 				$$ = new PrintStatement($3);
+				$$->level_number = global_symtab->level;
 				printf("PrintStmt: T_PRINT '(' ExprPlus ')'\n");
 			}
             ;
@@ -469,7 +557,15 @@ Expr        :  Constant {
 				printf("Expr:  T_READLINE '(' ')'\n");
 			}
             |  T_NEW T_IDENTIFIER '(' ')' {
-				$$ = new NewInstance($2);
+				bool current;
+				Entity* entity = global_symtab->find_entity($2, CLASS_ENTITY, &current);
+				ClassEntity* classEntity = dynamic_cast<ClassEntity *>(entity);
+				if (!classEntity){
+					yyerror("Undeclared class");
+					printf("  Undeclared class name: %s\n", $2);
+				}
+				$$ = new NewInstance($2, classEntity);
+				/*$$ = new NewInstance($2);*/
 				printf("Expr: T_NEW T_IDENTIFIER '(' ')'\n");
 			}
             |  T_NEW Type '[' Expr ']' {
@@ -508,13 +604,12 @@ Constant    :  T_INTCONSTANT {
             ;
 %%
 
-void yyerror(const char *s)
+/*void yyerror(const char *s)
 {
 	printf("\nError: (lineno: %d) %s encountered at %s\n", yylineno, s, yytext);
 }
 
 int main(){
-	/*yydebug = 1;*/
 	yydebug = 0;
     yyparse();
 	cout << endl;
@@ -522,4 +617,4 @@ int main(){
 		(*it)->print();
 	}
     return 0;
-}
+}*/

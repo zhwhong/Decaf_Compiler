@@ -26,7 +26,9 @@ public:
 	Statement() {}
 	virtual ~Statement() {}
 	virtual void print() = 0;
+	virtual void typecheck() = 0;
 
+	int level_number;
 	int lineno;
 };
 
@@ -35,7 +37,7 @@ public:
 	Expression() {};
 	virtual ~Expression() {};
 	virtual void print() = 0;
-// 	virtual Type* typeinfer() = 0;
+	virtual Type* typeinfer() = 0;
 
 	int lineno;
 };
@@ -46,8 +48,9 @@ public:
 	virtual ~Type() {};
 
 	virtual void print() = 0;
-// 	virtual bool isSubtypeOf(Type *t);
+	virtual bool isSubtypeOf(Type *t);
 
+	int dimension;
 	TypeKind kind;
 };
 
@@ -63,6 +66,7 @@ public:
 	virtual ~IfStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* expr;
 	Statement* thenpart;
@@ -75,6 +79,7 @@ public:
 	virtual ~WhileStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* expr;
 	Statement* body;
@@ -86,6 +91,7 @@ public:
 	virtual ~ForStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Statement* init;
 	Expression* guard;
@@ -99,6 +105,7 @@ public:
 	virtual ~ReturnStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* expr;
 };
@@ -110,6 +117,7 @@ public:
 	virtual ~BlockStatement();
 
 	void print();
+	virtual void typecheck();
 
 	list<Statement*>* stmt_list;
 };
@@ -121,6 +129,7 @@ public:
 	virtual ~DeclStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Entity* var_list;
 };
@@ -131,6 +140,7 @@ public:
 	virtual ~ExprStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* expr;
 };
@@ -141,6 +151,7 @@ public:
 	virtual ~PrintStatement();
 
 	void print();
+	virtual void typecheck();
 
 	list<Expression*>* exprs;
 };
@@ -150,6 +161,7 @@ class BreakStatement : public Statement {
 		BreakStatement();
 		virtual ~BreakStatement();
 		void print();
+		virtual void typecheck();
 };
 
 class AssignStatement : public Statement {
@@ -158,6 +170,7 @@ public:
 	virtual ~AssignStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* lhs;
 	Expression* rhs;
@@ -169,6 +182,7 @@ public:
 	virtual ~CallStatement();
 
 	void print();
+	virtual void typecheck();
 
 	Expression* exprs;
 };
@@ -178,6 +192,7 @@ public:
 	NullStatement();
 	virtual ~NullStatement();
 	void print();
+	virtual void typecheck();
 };
 
 
@@ -193,6 +208,7 @@ public:
 	virtual ~BinaryExpression();
 
 	void print();
+	virtual Type* typeinfer();
 
 	BinaryOperator binary_operator;
 	Expression* lhs;
@@ -205,6 +221,7 @@ public:
 	virtual ~AssignExpression();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* lhs;
 	Expression* rhs;
@@ -216,6 +233,7 @@ public:
 	virtual ~ArrayAccess();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* base;
 	Expression* idx;
@@ -227,6 +245,7 @@ public:
 	virtual ~MemberAccess();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* base;
 	char* name;
@@ -238,6 +257,7 @@ public:
 	virtual ~FunctionInvocation();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* base;
 	char* name;
@@ -250,6 +270,7 @@ public:
 	virtual ~UnaryExpression();
 
 	void print();
+	virtual Type* typeinfer();
 
 	UnaryOperator unary_operator;
 	Expression* arg;
@@ -261,20 +282,22 @@ public:
 	virtual ~NewArrayInstance();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* len;
 	Type* type;
 };
 
-
 class NewInstance : public Expression {
 public:
-	NewInstance(char* _class_name);
+	NewInstance(char* _class_name, ClassEntity* _classEntity);
 	virtual ~NewInstance();
 
 	void print();
+	virtual Type* typeinfer();
 
 	char* class_name;
+	ClassEntity* classEntity;
 };
 
 class InstanceofExpr : public Expression {
@@ -283,6 +306,7 @@ public:
 	virtual ~InstanceofExpr();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Expression* exprs;
 	char* class_name;
@@ -294,6 +318,7 @@ public:
 	virtual ~TranslateExpr();
 
 	void print();
+	virtual Type* typeinfer();
 
 	char* toType;
 	Expression* exprs;
@@ -304,6 +329,7 @@ public:
 	ThisExpression();
 	virtual ~ThisExpression();
 	void print();
+	virtual Type* typeinfer();
 };
 
 class ReadIntegerExpression : public Expression {
@@ -311,6 +337,7 @@ public:
 	ReadIntegerExpression();
 	virtual ~ReadIntegerExpression();
 	void print();
+	virtual Type* typeinfer();
 };
 
 class ReadLineExpression : public Expression {
@@ -318,6 +345,7 @@ public:
 	ReadLineExpression();
 	virtual ~ReadLineExpression();
 	void print();
+	virtual Type* typeinfer();
 };
 
 class IdExpression : public Expression {
@@ -326,6 +354,7 @@ public:
 	virtual ~IdExpression();
 
 	void print();
+	virtual Type* typeinfer();
 
 	Entity* id;
 };
@@ -335,6 +364,7 @@ public:
 	NullExpression();
 	virtual ~NullExpression();
 	void print();
+	virtual Type* typeinfer();
 };
 
 ////////////////////////////////
@@ -349,6 +379,7 @@ public:
 	virtual ~IntegerConstant();
 
 	void print();
+	virtual Type* typeinfer();
 
 	int value;
 };
@@ -359,6 +390,7 @@ public:
 	virtual ~DoubleConstant();
 
 	void print();
+	virtual Type* typeinfer();
 
 	double value;
 };
@@ -369,6 +401,7 @@ public:
 	virtual ~BooleanConstant();
 
 	void print();
+	virtual Type* typeinfer();
 
 	bool value;
 };
@@ -379,6 +412,7 @@ public:
 	virtual ~StringConstant();
 
 	void print();
+	virtual Type* typeinfer();
 
 	char* value;
 };
@@ -389,6 +423,7 @@ public:
 	virtual ~NullConstant();
 
 	void print();
+	virtual Type* typeinfer();
 };
 
 ////////////////////////////////
@@ -434,12 +469,12 @@ class VoidType : public Type {
 
 class ClassType : public Type {
 	public:
-		ClassType(char* _name);
+		ClassType(ClassEntity* _classtype);
 		virtual ~ClassType();
 
 		void print();
 
-		char* name;
+		ClassEntity *classtype;
 };
 
 class InstanceType : public Type {
