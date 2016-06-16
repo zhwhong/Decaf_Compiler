@@ -1,0 +1,261 @@
+/*void main() {
+  int[] a;
+  int i;
+  int sz;
+  
+  sz = 0;
+  
+  while(sz < 2) {
+    Print("Enter Number: ");
+    sz = ReadInteger();
+  }
+  
+  a = NewArray(sz, int);
+  a[0] = 0;
+  a[1] = 1;
+  
+  for(i = 2; i < a.length(); i++) {
+    a[i] = a[i-1] + a[i-2];
+  }
+  
+  for(i = 0; i < a.length(); i++) {
+    Print(a[i], " ");
+  }
+}
+*/
+
+
+/*
+
+void main() {
+  int a;
+  int b;
+    string c;
+    string d;
+  b = 1;
+  a=2;
+
+  c="aaaa";
+  d="abcde";
+
+b=fun(a);
+Print(b);
+Print(a);
+Print(c);
+Print(d);
+Print("ddddd");
+    }
+    int fun (int a)
+    {
+    return a+1;
+    }
+
+
+
+
+class a{
+  int a;
+  int b;
+  void c()
+  {
+  Print(55);
+  }
+}
+
+  void main()
+
+{
+    string s;
+    a t;
+    t=new a;
+    s = ReadLine();
+
+    Print( s);
+    t.c();
+}
+
+
+
+class Stack {
+  int sp;
+  int[] elems;
+
+
+    void Init() {
+      elems = NewArray(100, int);
+      sp = 0;
+      Push(3);
+    }
+    void Push(int i) {
+      elems[sp] = i;
+      sp = sp + 1;
+    }
+    int Pop() {
+      int val;
+      val = elems[sp - 1];
+      sp = sp - 1;
+      return val;
+    }
+    int NumElems() {
+      return sp;
+   }
+}
+
+void main() {
+  Stack s;
+  s = new Stack;
+  s.Init();
+  s.Push(3);
+  s.Push(7);
+  s.Push(4);
+  Print (s.NumElems(), " ", s.Pop(), " ", s.Pop(), " ", s.Pop(), " ", s.NumElems());
+}
+
+ class C {
+   void foo() { Print("Hello!\n"); }
+
+
+}
+
+
+
+void init_a() {
+  a = new C;
+}
+
+int main() {
+  int C;
+  init_a();
+  a.foo();
+}
+
+class a{
+  int a;
+  int b;
+}
+class main{
+  void main() {
+int a;
+int b;
+
+  a = 10;
+  b = 82;
+ {
+    int b;
+     b = 5;
+    Print(b);
+ }
+ {
+     int c;
+  bool d;
+  c = 12;
+     Print(c);
+  }
+  Print(a, b);
+}
+ 
+}
+
+*/
+class main{
+  void main()
+  {
+   t c;
+   c=new t;
+   c.t(10);
+   c.f();
+ 
+
+  
+}
+
+}
+
+class a{
+int q;
+  
+}
+
+class t extends a
+{
+  int b;
+  void f()
+  {
+  
+  Print(this.b);
+  Print(this.q);
+  }
+   void t(int i)
+  {
+  
+  this.b=i;
+  this.q=i;
+  }
+}
+
+
+
+/* void main() {
+  int[] a;
+  int i;
+  int sz;
+  
+  Print("Enter Number: ");
+  sz = ReadInteger();
+  
+  a = NewArray(sz, int);
+
+  Print("a.length() = ", a.length(), "\n");
+
+  for(i = 0; i < a.length(); i++)
+    a[i] = (i + 1) * 2;
+
+  for(i = 0; i < a.length(); i++)
+    Print(a[i], " ");
+} */
+
+
+/* int fib(int n) {
+  if(n == 0) return 0;
+  if(n == 1) return 1;
+  return fib(n - 1) + fib(n - 2);
+}
+
+void main() {
+  int i;
+  for(i = 0; i < 20; i++) {
+    Print("fib(", i, "): ", fib(i), "\n");
+  }
+} */
+/*
+void main() {
+  int n;
+  int c;
+  
+  c = 0;
+  Print("Enter a number: ");
+  n = ReadInteger();
+  while(n > 1) {
+    if(n % 2 == 0) {
+      Print(n, " is even, so we halve it: ", (n / 2), "\n");
+      n = n / 2;
+    } else {
+      Print(n, " is odd, so we 3n + 1: ", (3 * n + 1), "\n");
+      n = 3 * n + 1;
+    }
+    c++;
+  }
+  Print("It took ", c, " step(s) to reach 1.");
+}*/
+/*
+void a() {
+  Print("A");
+}
+
+int main() {
+  int f_a;
+  f_a = 0;
+  a();
+  a();
+  Print(f_a);
+}*/

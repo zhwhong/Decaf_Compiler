@@ -1,0 +1,88 @@
+_offset_main_0:
+	BeginFunc 4 ;
+	_tmp0 = 0 ;
+	Return _tmp0 ;
+	EndFunc ;
+f_main:
+main:
+	BeginFunc 128 ;
+	_tmp1 = 0 ;
+	c = _tmp1 ;
+	_tmp2 = "Enter a number: " ;
+	PushParam _tmp2 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp3 = LCall _ReadInteger ;
+	n = _tmp3 ;
+_L0:
+	_tmp4 = 1 ;
+	_tmp5 = _tmp4 < n ;
+	IfZ _tmp5 Goto _L1 ;
+	_tmp6 = 2 ;
+	_tmp7 = n % _tmp6 ;
+	_tmp8 = 0 ;
+	_tmp9 = _tmp7 == _tmp8 ;
+	IfZ _tmp9 Goto _L3 ;
+	PushParam n ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp10 = " is even, so we halve it: " ;
+	PushParam _tmp10 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp11 = 2 ;
+	_tmp12 = n / _tmp11 ;
+	PushParam _tmp12 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp13 = "\n" ;
+	PushParam _tmp13 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp14 = 2 ;
+	_tmp15 = n / _tmp14 ;
+	n = _tmp15 ;
+	Goto _L2 ;
+_L3:
+	PushParam n ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp16 = " is odd, so we 3n + 1: " ;
+	PushParam _tmp16 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp17 = 3 ;
+	_tmp18 = _tmp17 * n ;
+	_tmp19 = 1 ;
+	_tmp20 = _tmp18 + _tmp19 ;
+	PushParam _tmp20 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp21 = "\n" ;
+	PushParam _tmp21 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp22 = 3 ;
+	_tmp23 = _tmp22 * n ;
+	_tmp24 = 1 ;
+	_tmp25 = _tmp23 + _tmp24 ;
+	n = _tmp25 ;
+_L2:
+	_tmp26 = 1 ;
+	_tmp27 = c ;
+	_tmp28 = _tmp27 + _tmp26 ;
+	c = _tmp28 ;
+	Goto _L0 ;
+_L1:
+	_tmp29 = "It took " ;
+	PushParam _tmp29 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	PushParam c ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp30 = " step(s) to reach 1." ;
+	PushParam _tmp30 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	EndFunc ;

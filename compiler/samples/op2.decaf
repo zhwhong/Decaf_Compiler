@@ -1,0 +1,7 @@
+class main
+{
+void main() {
+  Print(true && false);
+  Print(true || false);
+}	
+}

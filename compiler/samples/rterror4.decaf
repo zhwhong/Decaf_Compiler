@@ -1,0 +1,9 @@
+class main
+{
+void main()
+{
+    int[] arr;
+    arr = NewArray(-5, int);
+    Print("shouldn't get here");
+}	
+}

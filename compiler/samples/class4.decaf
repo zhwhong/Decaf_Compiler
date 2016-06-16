@@ -1,0 +1,35 @@
+
+class B { int z; int GetZ() { return z;}}
+class c
+{
+  void binky(B x) {
+    Print("x = ", x.GetZ() , "\n");
+}
+}
+
+
+class X extends B {
+ 
+  void f() {
+    c t;
+    t =new c;
+    z = 3;
+    t.binky(this);
+  }
+
+   bool compare(X other)   {
+     return this == other;
+   }
+}
+
+class main 
+{
+  void main() {
+  X d;
+
+  d = new X;
+  d.f();
+  if (d.compare(d)) Print("Same");
+  else Print("Different");
+} 
+}

@@ -1,0 +1,42 @@
+#!/bin/sh -f
+#
+# run
+# Usage:  run decaf-file
+#
+# Compiles decaf-file and executes (spim).
+#
+
+SPIM=/usr/bin/spim
+COMPILER=dcc
+
+if [ $# -lt 1 ]; then
+  echo "Run script error: The run script takes one argument, the path to a Decaf file."
+  exit 1;
+fi
+if [ ! -x $COMPILER ]; then
+  echo "Run script error: Cannot find $COMPILER executable!"
+  echo "(You must run this script from the directory containing your $COMPILER executable.)"
+  exit 1;
+fi
+if [ ! -r $1 ]; then
+  echo "Run script error: Cannot find Decaf input file named '$1'."
+  exit 1;
+fi
+
+#echo "-- $COMPILER <$1 >tmp.asm"
+./$COMPILER < $1 > $1.opt.asm 2>$1.errors
+./$COMPILER -d tac < $1 > $1.opt.tac 
+if [ $? -ne 0 -o -s $1.errors ]; then
+#  echo "Run script error: errors reported from $COMPILER compiling '$1'."
+#  echo " "
+  cat $1.errors
+  exit 1;
+fi
+cat syscall.asm>>$1.opt.asm
+#echo "-- spim -file tmp.asm"
+#echo " "
+$SPIM -file $1.opt.asm >$1.opt.out
+
+#echo " "
+#echo " "
+exit 0;

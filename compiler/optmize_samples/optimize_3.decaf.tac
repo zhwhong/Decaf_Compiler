@@ -1,0 +1,48 @@
+_offset_main_0:
+	BeginFunc 4 ;
+	_tmp0 = 0 ;
+	Return _tmp0 ;
+	EndFunc ;
+f_main:
+main:
+	BeginFunc 52 ;
+	_tmp1 = 42 ;
+	a = _tmp1 ;
+	_tmp2 = 137 ;
+	b = _tmp2 ;
+	_tmp3 = a + b ;
+	c = _tmp3 ;
+	_tmp4 = a + b ;
+	PushParam _tmp4 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp5 = a + b ;
+	PushParam _tmp5 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp6 = 3 ;
+	a = _tmp6 ;
+	_tmp7 = 4 ;
+	b = _tmp7 ;
+	_tmp8 = a + b ;
+	PushParam _tmp8 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	PushParam a ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	PushParam b ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	PushParam a ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	PushParam b ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp9 = a + b ;
+	_tmp10 = c + _tmp9 ;
+	PushParam _tmp10 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;

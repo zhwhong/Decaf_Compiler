@@ -1,0 +1,291 @@
+_offset_Animal_0:
+	BeginFunc 4 ;
+	_tmp0 = 0 ;
+	Return _tmp0 ;
+	EndFunc ;
+VTable Animal =
+	_offset_Animal_0,
+	f_Animal.Method1,
+; 
+f_Animal.Method1:
+	BeginFunc 24 ;
+	_tmp1 = 4 ;
+	_tmp2 = this + _tmp1 ;
+	_tmp3 = *(_tmp2) ;
+	PushParam _tmp3 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp4 = 8 ;
+	_tmp5 = this + _tmp4 ;
+	_tmp6 = *(_tmp5) ;
+	PushParam _tmp6 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;
+_offset_Cow_0:
+	BeginFunc 4 ;
+	_tmp7 = 0 ;
+	Return _tmp7 ;
+	EndFunc ;
+VTable Cow =
+	_offset_Cow_0,
+	f_Cow.Method1,
+	f_Cow.Init,
+	f_Cow.Method2,
+; 
+f_Cow.Init:
+	BeginFunc 120 ;
+	_tmp8 = 4 ;
+	_tmp9 = this + _tmp8 ;
+	_tmp10 = *(_tmp9) ;
+	_tmp11 = 10 ;
+	_tmp12 = 4 ;
+	_tmp13 = this + _tmp12 ;
+	*(_tmp13) = _tmp11 ;
+	_tmp14 = 8 ;
+	_tmp15 = this + _tmp14 ;
+	_tmp16 = *(_tmp15) ;
+	_tmp17 = 4 ;
+	_tmp18 = this + _tmp17 ;
+	_tmp19 = *(_tmp18) ;
+	_tmp20 = 2 ;
+	_tmp21 = _tmp19 * _tmp20 ;
+	_tmp22 = 8 ;
+	_tmp23 = this + _tmp22 ;
+	*(_tmp23) = _tmp21 ;
+	_tmp24 = 12 ;
+	_tmp25 = this + _tmp24 ;
+	_tmp26 = *(_tmp25) ;
+	_tmp27 = 28 ;
+	_tmp28 = 12 ;
+	_tmp29 = this + _tmp28 ;
+	*(_tmp29) = _tmp27 ;
+	_tmp30 = 16 ;
+	_tmp31 = this + _tmp30 ;
+	_tmp32 = *(_tmp31) ;
+	_tmp33 = 0 ;
+	_tmp34 = 9 ;
+	_tmp35 = _tmp33 - _tmp34 ;
+	_tmp36 = 16 ;
+	_tmp37 = this + _tmp36 ;
+	*(_tmp37) = _tmp35 ;
+	EndFunc ;
+f_Cow.Method2:
+	BeginFunc 72 ;
+	_tmp38 = 4 ;
+	_tmp39 = this + _tmp38 ;
+	_tmp40 = *(_tmp39) ;
+	PushParam _tmp40 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp41 = 8 ;
+	_tmp42 = this + _tmp41 ;
+	_tmp43 = *(_tmp42) ;
+	PushParam _tmp43 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp44 = 12 ;
+	_tmp45 = this + _tmp44 ;
+	_tmp46 = *(_tmp45) ;
+	PushParam _tmp46 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp47 = 16 ;
+	_tmp48 = this + _tmp47 ;
+	_tmp49 = *(_tmp48) ;
+	PushParam _tmp49 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp50 = *(this) ;
+	_tmp51 = *(_tmp50) ;
+	_tmp52 = ACall _tmp51 ;
+	_tmp53 = this - _tmp52 ;
+	_tmp54 = *(_tmp50 + 4) ;
+	PushParam _tmp53 ;
+	ACall _tmp54 ;
+	_tmp55 = 0 ;
+	PopParams 4 ;
+	EndFunc ;
+f_Cow.Method1:
+	BeginFunc 24 ;
+	_tmp56 = 4 ;
+	_tmp57 = this + _tmp56 ;
+	_tmp58 = *(_tmp57) ;
+	PushParam _tmp58 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp59 = 8 ;
+	_tmp60 = this + _tmp59 ;
+	_tmp61 = *(_tmp60) ;
+	PushParam _tmp61 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;
+_offset_Jersey_0:
+	BeginFunc 4 ;
+	_tmp62 = 0 ;
+	Return _tmp62 ;
+	EndFunc ;
+VTable Jersey =
+	_offset_Jersey_0,
+	f_Jersey.Method1,
+	f_Jersey.Init,
+	f_Jersey.Method2,
+	f_Jersey.Method3,
+; 
+f_Jersey.Method3:
+	BeginFunc 84 ;
+	_tmp63 = *(this) ;
+	_tmp64 = *(_tmp63) ;
+	_tmp65 = ACall _tmp64 ;
+	_tmp66 = this - _tmp65 ;
+	_tmp67 = *(_tmp63 + 8) ;
+	PushParam _tmp66 ;
+	ACall _tmp67 ;
+	_tmp68 = 0 ;
+	PopParams 4 ;
+	_tmp69 = 20 ;
+	_tmp70 = this + _tmp69 ;
+	_tmp71 = *(_tmp70) ;
+	_tmp72 = 25 ;
+	_tmp73 = 20 ;
+	_tmp74 = this + _tmp73 ;
+	*(_tmp74) = _tmp72 ;
+	_tmp75 = *(this) ;
+	_tmp76 = *(_tmp75) ;
+	_tmp77 = ACall _tmp76 ;
+	_tmp78 = this - _tmp77 ;
+	_tmp79 = *(_tmp75 + 12) ;
+	PushParam _tmp78 ;
+	ACall _tmp79 ;
+	_tmp80 = 0 ;
+	PopParams 4 ;
+	_tmp81 = 20 ;
+	_tmp82 = this + _tmp81 ;
+	_tmp83 = *(_tmp82) ;
+	PushParam _tmp83 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;
+f_Jersey.Method1:
+	BeginFunc 24 ;
+	_tmp84 = 4 ;
+	_tmp85 = this + _tmp84 ;
+	_tmp86 = *(_tmp85) ;
+	PushParam _tmp86 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp87 = 8 ;
+	_tmp88 = this + _tmp87 ;
+	_tmp89 = *(_tmp88) ;
+	PushParam _tmp89 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;
+f_Jersey.Init:
+	BeginFunc 120 ;
+	_tmp90 = 4 ;
+	_tmp91 = this + _tmp90 ;
+	_tmp92 = *(_tmp91) ;
+	_tmp93 = 10 ;
+	_tmp94 = 4 ;
+	_tmp95 = this + _tmp94 ;
+	*(_tmp95) = _tmp93 ;
+	_tmp96 = 8 ;
+	_tmp97 = this + _tmp96 ;
+	_tmp98 = *(_tmp97) ;
+	_tmp99 = 4 ;
+	_tmp100 = this + _tmp99 ;
+	_tmp101 = *(_tmp100) ;
+	_tmp102 = 2 ;
+	_tmp103 = _tmp101 * _tmp102 ;
+	_tmp104 = 8 ;
+	_tmp105 = this + _tmp104 ;
+	*(_tmp105) = _tmp103 ;
+	_tmp106 = 12 ;
+	_tmp107 = this + _tmp106 ;
+	_tmp108 = *(_tmp107) ;
+	_tmp109 = 28 ;
+	_tmp110 = 12 ;
+	_tmp111 = this + _tmp110 ;
+	*(_tmp111) = _tmp109 ;
+	_tmp112 = 16 ;
+	_tmp113 = this + _tmp112 ;
+	_tmp114 = *(_tmp113) ;
+	_tmp115 = 0 ;
+	_tmp116 = 9 ;
+	_tmp117 = _tmp115 - _tmp116 ;
+	_tmp118 = 16 ;
+	_tmp119 = this + _tmp118 ;
+	*(_tmp119) = _tmp117 ;
+	EndFunc ;
+f_Jersey.Method2:
+	BeginFunc 72 ;
+	_tmp120 = 4 ;
+	_tmp121 = this + _tmp120 ;
+	_tmp122 = *(_tmp121) ;
+	PushParam _tmp122 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp123 = 8 ;
+	_tmp124 = this + _tmp123 ;
+	_tmp125 = *(_tmp124) ;
+	PushParam _tmp125 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp126 = 12 ;
+	_tmp127 = this + _tmp126 ;
+	_tmp128 = *(_tmp127) ;
+	PushParam _tmp128 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp129 = 16 ;
+	_tmp130 = this + _tmp129 ;
+	_tmp131 = *(_tmp130) ;
+	PushParam _tmp131 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp132 = *(this) ;
+	_tmp133 = *(_tmp132) ;
+	_tmp134 = ACall _tmp133 ;
+	_tmp135 = this - _tmp134 ;
+	_tmp136 = *(_tmp132 + 4) ;
+	PushParam _tmp135 ;
+	ACall _tmp136 ;
+	_tmp137 = 0 ;
+	PopParams 4 ;
+	EndFunc ;
+_offset_main_0:
+	BeginFunc 4 ;
+	_tmp138 = 0 ;
+	Return _tmp138 ;
+	EndFunc ;
+f_main:
+main:
+	BeginFunc 64 ;
+	_tmp139 = 24 ;
+	PushParam _tmp139 ;
+	_tmp140 = LCall _Alloc ;
+	PopParams 4 ;
+	_tmp141 = Jersey ;
+	*(_tmp140) = _tmp141 ;
+	b = _tmp140 ;
+	_tmp142 = *(b) ;
+	_tmp143 = *(_tmp142) ;
+	_tmp144 = ACall _tmp143 ;
+	_tmp145 = b - _tmp144 ;
+	_tmp146 = *(_tmp142 + 8) ;
+	PushParam _tmp145 ;
+	ACall _tmp146 ;
+	_tmp147 = 0 ;
+	PopParams 4 ;
+	_tmp148 = *(b) ;
+	_tmp149 = *(_tmp148) ;
+	_tmp150 = ACall _tmp149 ;
+	_tmp151 = b - _tmp150 ;
+	_tmp152 = *(_tmp148 + 16) ;
+	PushParam _tmp151 ;
+	ACall _tmp152 ;
+	_tmp153 = 0 ;
+	PopParams 4 ;
+	EndFunc ;

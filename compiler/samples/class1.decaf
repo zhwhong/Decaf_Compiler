@@ -1,0 +1,13 @@
+class Binky {
+   void Method() {}
+}
+class main {
+void main() {
+  Binky d;
+   Binky a;
+ 
+  d = new Binky;
+  a = new Binky;
+  a = d;
+}	
+}

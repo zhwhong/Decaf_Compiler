@@ -1,0 +1,8 @@
+class main
+{
+void main()
+{
+    ReadLine();
+    Print(ReadLine());
+}	
+}

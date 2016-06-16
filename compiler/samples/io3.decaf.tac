@@ -1,0 +1,41 @@
+_offset_main_0:
+	BeginFunc 4 ;
+	_tmp0 = 0 ;
+	Return _tmp0 ;
+	EndFunc ;
+f_main:
+main:
+	BeginFunc 56 ;
+	_tmp1 = 4 ;
+	PushParam _tmp1 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp2 = 4 ;
+	_tmp3 = 8 ;
+	_tmp4 = _tmp2 * _tmp3 ;
+	_tmp5 = 1 ;
+	_tmp6 = _tmp4 + _tmp5 ;
+	PushParam _tmp6 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	_tmp7 = "hello" ;
+	PushParam _tmp7 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp8 = 1 ;
+	PushParam _tmp8 ;
+	LCall _PrintBool ;
+	PopParams 4 ;
+	_tmp9 = "cs143\n" ;
+	PushParam _tmp9 ;
+	LCall _PrintString ;
+	PopParams 4 ;
+	_tmp10 = 8 ;
+	_tmp11 = 3 ;
+	_tmp12 = _tmp10 - _tmp11 ;
+	_tmp13 = 2 ;
+	_tmp14 = _tmp12 - _tmp13 ;
+	PushParam _tmp14 ;
+	LCall _PrintInt ;
+	PopParams 4 ;
+	EndFunc ;

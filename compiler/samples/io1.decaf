@@ -1,0 +1,8 @@
+class main
+{
+void main()
+{
+    ReadInteger();
+    Print(ReadInteger());
+}	
+}
