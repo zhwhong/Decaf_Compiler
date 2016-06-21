@@ -16,7 +16,7 @@
  * The same notation is used on the matching iterator for the table,
  * i.e. a Hashtable<char*> supports an Iterator<char*>.
  *
- * An iterator is provided for iterating over the entries in a table. 
+ * An iterator is provided for iterating over the entries in a table.
  * The iterator walks through the values, one by one, in alphabetical
  * order by the key. Sample iteration usage:
  *
@@ -36,20 +36,20 @@
 #include <map>
 #include <string.h>
 using namespace std;
-    
+
 struct ltstr {
   bool operator()(const char* s1, const char* s2) const
   { return strcmp(s1, s2) < 0; }
 };
 
 
-template <class Value> class Iterator; 
- 
+template <class Value> class Iterator;
+
 template<class Value> class Hashtable {
 
-  private: 
+  private:
      multimap<const char*, Value, ltstr> mmap;
- 
+
    public:
             // ctor creates a new empty hashtable
      Hashtable() {}
@@ -58,7 +58,7 @@ template<class Value> class Hashtable {
      int NumEntries() const;
 
            // Associates value with key. If a previous entry for
-           // key exists, the bool parameter controls whether 
+           // key exists, the bool parameter controls whether
            // new value overwrites the previous (removing it from
            // from the table entirely) or just shadows it (keeps previous
            // and adds additional entry). The lastmost entered one for an
@@ -80,7 +80,7 @@ template<class Value> class Hashtable {
           // Returns an Iterator object (see below) that can be used to
           // visit each value in the table in alphabetical order.
      Iterator<Value> GetIterator();
-     
+
           // Make a copy of a pointer
      Hashtable<Value>* MakeCopy();
 
@@ -91,7 +91,7 @@ template<class Value> class Hashtable {
  * sample usage above for how to iterate over a hashtable using an
  * iterator.
  */
-template <class Value> 
+template <class Value>
 class Iterator {
 
   friend class Hashtable<Value>;
@@ -100,7 +100,7 @@ class Iterator {
     typename multimap<const char*, Value , ltstr>::iterator cur, end;
     Iterator(multimap<const char*, Value, ltstr>& t)
 	: cur(t.begin()), end(t.end()) {}
-	 
+
   public:
          // Returns current value and advances iterator to next.
          // Returns NULL when there are no more values in table
@@ -112,4 +112,3 @@ class Iterator {
 #include "hashtable.cc" // icky, but allows implicit template instantiation
 
 #endif
-

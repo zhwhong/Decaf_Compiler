@@ -82,6 +82,6 @@ depend:
 	makedepend -- $(CFLAGS) -- $(SRCS)
 
 clean:
-	rm -f $(JUNK) y.output y.dot $(PRODUCTS)
+	rm -f $(JUNK) y.output y.dot $(PRODUCTS) tmp.asm tmp.errors tmp.tac tmp.out
 
 # DO NOT DELETE

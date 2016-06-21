@@ -1,4 +1,4 @@
-.data			
+.data
 	 newline: .asciiz "\n"
 	 buf: .space 100
 .text
@@ -18,7 +18,7 @@ _PrintInt:
 	  lw $ra, -4($fp)	# restore saved ra
 	  lw $fp, 0($fp)	# restore saved fp
 	  jr $ra		# return from function
-	
+
 _PrintString:
                 # BeginFunc 8
 	  subu $sp, $sp, 8	# decrement sp to make space to save ra, fp
@@ -75,7 +75,7 @@ _StringEqual:
 	  lw $s1, 4($fp)
 	  lw $s2, 8($fp)
 	  li $s3, 0
-loop:      
+loop:
 	lb  $s4,0($s1)
 	lb  $s5,0($s2)
 	beq $s4,$s3, next
@@ -83,16 +83,16 @@ loop:
     	addi $s1, $s1, 1
                 addi $s2, $s2, 1
                 j loop
-next:     
+next:
  	beq $s4,$5,ok
                j  false
  false:
            li  $v0,0
            j  return
-ok:    
+ok:
 	 li   $v0,1
-          	 j  return  
- 
+          	 j  return
+
 	# EndFunc
 	# (below handles reaching end of fn body with no explicit return)
 return:
@@ -100,7 +100,6 @@ return:
 	  lw $ra, -4($fp)	# restore saved ra
 	  lw $fp, 0($fp)	# restore saved fp
 	  jr $ra		# return from function
-
 
 _ReadLine:
 # BeginFunc 8
@@ -129,7 +128,7 @@ _Alloc :
 	   move $a0,$t0
                 li $v0 ,9
 	syscall
-	
+
 	# EndFunc
 	# (below handles reaching end of fn body with no explicit return)
 	  move $sp, $fp		# pop callee frame off stack

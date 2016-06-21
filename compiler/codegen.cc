@@ -19,9 +19,9 @@ CodeGenerator::CodeGenerator()
 void CodeGenerator::OptimizeIR()
 {
     // Identify Basic Blocks
-    // Instructions that signify the end of a basic block inclusive: IfZ, Goto, Return, 
+    // Instructions that signify the end of a basic block inclusive: IfZ, Goto, Return,
     // Instrucitons that signify the end of a basic block exclusive: BeginFunc, EndFunc, Label, VTable
-    
+
     List<Instruction*> *finalOpt = new List<Instruction*>();
     List<Instruction*> *currBB = new List<Instruction*>();
     bool endOfBasicBlock = false;
@@ -47,7 +47,7 @@ void CodeGenerator::OptimizeIR()
             Optimize_CSER(currBB);
             Optimize_CP(currBB);
             Optimize_LA(currBB);
-            
+
             for (int i = 0; i < currBB->NumElements(); i++)
                 finalOpt->Append(currBB->Nth(i));
 
@@ -60,7 +60,7 @@ void CodeGenerator::OptimizeIR()
             endOfBasicBlock = false;
         }
     }
-    
+
     delete code;
     code = finalOpt;
 }
@@ -78,17 +78,17 @@ void CodeGenerator::Optimize_CSER(List<Instruction*>* bb) {
     for(int i = 0; i < bb->NumElements(); ++i) {
         if(Assign *ag = dynamic_cast<Assign*>(bb->Nth(i))) {
             for(int j = 0; j < l->NumElements(); ++j) {
-                if((*(ag->dst) == *(l->Nth(j)->op1)) || 
-                   ((l->Nth(j)->op2 != NULL) && *(ag->dst) == *(l->Nth(j)->op2)) || 
+                if((*(ag->dst) == *(l->Nth(j)->op1)) ||
+                   ((l->Nth(j)->op2 != NULL) && *(ag->dst) == *(l->Nth(j)->op2)) ||
                    *(ag->dst) == *(l->Nth(j)->dst)) {
                     l->RemoveAt(j);
                     --j;
-                    continue; 
+                    continue;
                 }
             }
-            
+
             Location* newSrc = NULL;
-            
+
             for(int j = 0; j < l->NumElements(); ++j) {
                 if(l->Nth(j)->opc != BinaryOp::InvalidOpCode) continue;
                 if(*(ag->src) == *(l->Nth(j)->dst)) {
@@ -98,7 +98,7 @@ void CodeGenerator::Optimize_CSER(List<Instruction*>* bb) {
                     break;
                 }
             }
-            
+
             if(newSrc == NULL) {
                 CSER_binOps* tmp = new CSER_binOps();
                 tmp->dst = ag->dst;
@@ -114,24 +114,24 @@ void CodeGenerator::Optimize_CSER(List<Instruction*>* bb) {
                 tmp->opc = BinaryOp::InvalidOpCode;
                 l->Append(tmp);
             }
-            
+
         } else if(BinaryOp *a = dynamic_cast<BinaryOp *>(bb->Nth(i))) {
             for(int j = 0; j < l->NumElements(); ++j) {
-                if(*(a->GetDst()) == *(l->Nth(j)->op1) || 
-                   ((l->Nth(j)->op2 != NULL) && *(a->GetDst()) == *(l->Nth(j)->op2)) || 
+                if(*(a->GetDst()) == *(l->Nth(j)->op1) ||
+                   ((l->Nth(j)->op2 != NULL) && *(a->GetDst()) == *(l->Nth(j)->op2)) ||
                    *(a->GetDst()) == *(l->Nth(j)->dst)) {
                     l->RemoveAt(j);
                     --j;
                     continue;
                 }
             }
-            
+
             Location* newSrc = NULL;
-            
+
             for(int j = 0; j < l->NumElements(); ++j) {
-                if(*(a->GetOp1()) == *(l->Nth(j)->op1) && 
-                   l->Nth(j)->op2 != NULL && 
-                   *(a->GetOp2()) == *(l->Nth(j)->op2) && 
+                if(*(a->GetOp1()) == *(l->Nth(j)->op1) &&
+                   l->Nth(j)->op2 != NULL &&
+                   *(a->GetOp2()) == *(l->Nth(j)->op2) &&
                    (a->GetOpCode()) == (l->Nth(j)->opc)) {
                     bb->RemoveAt(i);
                     newSrc = l->Nth(j)->dst;
@@ -139,7 +139,7 @@ void CodeGenerator::Optimize_CSER(List<Instruction*>* bb) {
                     break;
                 }
             }
-            
+
             if(newSrc == NULL) {
                 CSER_binOps* tmp = new CSER_binOps();
                 tmp->dst = a->GetDst();
@@ -157,7 +157,7 @@ void CodeGenerator::Optimize_CSER(List<Instruction*>* bb) {
             }
         }
     }
-    for(int j = 0; j < l->NumElements(); ++j) 
+    for(int j = 0; j < l->NumElements(); ++j)
         delete l->Nth(j);
     delete l;
 }
@@ -189,7 +189,7 @@ void CodeGenerator::Optimize_CP(List<Instruction*>* bb) {
                 }
             }
         }
-        
+
         for(int j = 0; j < l->NumElements(); ++j) {
             if(ag != NULL) {
                 if(*(ag->src) == *(l->Nth(j)->dst)) {
@@ -217,7 +217,7 @@ void CodeGenerator::Optimize_CP(List<Instruction*>* bb) {
                 }
             }
         }
-        
+
         ag = dynamic_cast<Assign*>(bb->Nth(i));
         if(ag != NULL) {
             AssignStmt* z = new AssignStmt();
@@ -226,7 +226,7 @@ void CodeGenerator::Optimize_CP(List<Instruction*>* bb) {
             l->Append(z);
         }
     }
-    
+
     for(int i = 0; i < l->NumElements(); ++i)
         delete l->Nth(i);
     delete l;
@@ -347,7 +347,7 @@ Location *CodeGenerator::GetNewLocationOnStack(const char* name) {
   return result;
 }
 
- 
+
 Location *CodeGenerator::GenLoadConstant(int value)
 {
   Location *result = GenTempVar();
@@ -360,14 +360,14 @@ Location *CodeGenerator::GenLoadConstant(const char *s)
   Location *result = GenTempVar();
   code->Append(new LoadStringConstant(result, s));
   return result;
-} 
+}
 
 Location *CodeGenerator::GenLoadLabel(const char *label)
 {
   Location *result = GenTempVar();
   code->Append(new LoadLabel(result, label));
   return result;
-} 
+}
 
 
 void CodeGenerator::GenAssign(Location *dst, Location *src)
@@ -456,8 +456,7 @@ Location *CodeGenerator::GenACall(Location *fnAddr, bool fnHasReturnValue)
   code->Append(new ACall(fnAddr, result));
   return result;
 }
- 
- 
+
 static struct _builtin {
   const char *label;
   int numArgs;
@@ -490,12 +489,10 @@ Location *CodeGenerator::GenBuiltInCall(BuiltIn bn,Location *arg1, Location *arg
   return result;
 }
 
-
 void CodeGenerator::GenVTable(const char *className, List<const char *> *methodLabels)
 {
   code->Append(new VTable(className, methodLabels));
 }
-
 
 void CodeGenerator::DoFinalCodeGen()
 {
@@ -509,5 +506,3 @@ void CodeGenerator::DoFinalCodeGen()
 	 code->Nth(i)->Emit(&mips);
   }
 }
-
-

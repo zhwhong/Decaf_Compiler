@@ -1,23 +1,49 @@
+class main{
+    void main(){
+        t c;
+        c=new t;
+        c.t(10);
+        c.f();
+    }
+}
+
+class a{
+    int q;
+}
+
+class t extends a
+{
+    int b;
+    void f(){
+        Print(this.b);
+        Print(this.q);
+    }
+    void t(int i){
+        this.b = i;
+        this.q = i;
+    }
+}
+
 /*void main() {
   int[] a;
   int i;
   int sz;
-  
+
   sz = 0;
-  
+
   while(sz < 2) {
     Print("Enter Number: ");
     sz = ReadInteger();
   }
-  
+
   a = NewArray(sz, int);
   a[0] = 0;
   a[1] = 1;
-  
+
   for(i = 2; i < a.length(); i++) {
     a[i] = a[i-1] + a[i-2];
   }
-  
+
   for(i = 0; i < a.length(); i++) {
     Print(a[i], " ");
   }
@@ -153,56 +179,19 @@ int b;
   }
   Print(a, b);
 }
- 
+
 }
 
 */
-class main{
-  void main()
-  {
-   t c;
-   c=new t;
-   c.t(10);
-   c.f();
- 
-
-  
-}
-
-}
-
-class a{
-int q;
-  
-}
-
-class t extends a
-{
-  int b;
-  void f()
-  {
-  
-  Print(this.b);
-  Print(this.q);
-  }
-   void t(int i)
-  {
-  
-  this.b=i;
-  this.q=i;
-  }
-}
-
-
 
 /* void main() {
   int[] a;
   int i;
   int sz;
-  
+
   Print("Enter Number: ");
   sz = ReadInteger();
-  
+
   a = NewArray(sz, int);
 
   Print("a.length() = ", a.length(), "\n");
@@ -231,7 +220,7 @@ void main() {
 void main() {
   int n;
   int c;
-  
+
   c = 0;
   Print("Enter a number: ");
   n = ReadInteger();

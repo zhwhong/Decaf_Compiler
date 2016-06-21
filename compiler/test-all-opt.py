@@ -33,6 +33,5 @@ for _, _, files in os.walk(TEST_DIRECTORY):
     else:
       result = Popen('./run-opt ' + testName, shell = True, stderr = STDOUT, stdout = PIPE)
 
-
     print 'Executing test "%s"' % testName
     print ''.join(result.stdout.readlines())

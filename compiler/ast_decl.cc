@@ -14,7 +14,7 @@ extern Hashtable<Decl *>* __globalST;
 
 Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
     Assert(n != NULL);
-    (id=n)->SetParent(this); 
+    (id=n)->SetParent(this);
 }
 
 
@@ -42,7 +42,7 @@ void VarDecl::Check(Hashtable<Decl *>* symbolTable) {
 
 ClassDecl::ClassDecl(Identifier *n, NamedType *ex, List<NamedType*> *imp, List<Decl*> *m) : Decl(n) {
     // extends can be NULL, impl & mem may be empty lists but cannot be NULL
-    Assert(n != NULL && imp != NULL && m != NULL);     
+    Assert(n != NULL && imp != NULL && m != NULL);
     extends = ex;
     if (extends) extends->SetParent(this);
     (implements=imp)->SetParentAll(this);
@@ -60,7 +60,7 @@ void ClassDecl::RecursiveAddList(List<VarDecl*>* v, List<FnDecl*>* m, List<List<
     for(int i = 0; i < members->NumElements(); i++) {
         if(FnDecl* fn = dynamic_cast<FnDecl*>(members->Nth(i))) {
             bool found = false;
-            for(int i = 0; i < m->NumElements(); i++) 
+            for(int i = 0; i < m->NumElements(); i++)
                 if(strcmp(m->Nth(i)->GetName(), fn->GetName()) == 0) {
                     found = true;
                     m->RemoveAt(i);
@@ -90,7 +90,7 @@ void ClassDecl::RecursiveInterfaceAdd(List<VarDecl*>* v, List<FnDecl*>* m, List<
 
         for(int j = 0; j < mem->NumElements(); j++) {
             FnDecl* i_f = dynamic_cast<FnDecl *>(mem->Nth(j));
-            
+
             for(int k = 0; k < m->NumElements(); k++) {
                 if(strcmp(m->Nth(k)->GetName(), i_f->GetName()) == 0) {
                     currI->Append(m->Nth(k));
@@ -106,7 +106,7 @@ void ClassDecl::EmitHeader(CodeGenerator* cg, List<const char*>* names, int offs
     char tmpName[100];
     snprintf(tmpName, 100, "_offset_%s_%d", this->GetName(), offsetCount);
     tmpName[99] = '\0';
-    
+
     cg->GenLabel(tmpName);
     BeginFunc* bf = cg->GenBeginFunc();
     cg->GenReturn(cg->GenLoadConstant(offsetCount));
@@ -120,7 +120,7 @@ void ClassDecl::Emit(CodeGenerator* cg) {
     int offsetCount = 0;
 
     List<const char *>* names = new List<const char *>();
-  
+
     EmitHeader(cg, names, offsetCount);
     offsetCount += 4;
 
@@ -139,13 +139,13 @@ void ClassDecl::Emit(CodeGenerator* cg) {
             myFn->SetParent(this);
             allMethods->RemoveAt(i);
             allMethods->InsertAt(myFn, i);
-            
+
             string tmpName = "f_";
             tmpName += dynamic_cast<Decl*>(allMethods->Nth(i)->GetParent())->GetName();
             tmpName += ".";
             tmpName += allMethods->Nth(i)->GetName();
             names->Append(strdup(tmpName.c_str()));
-            
+
             members->Append(myFn);
         }
     }
@@ -158,10 +158,10 @@ void ClassDecl::Emit(CodeGenerator* cg) {
         vtableName += ifName->Nth(j);
 
         List<const char *>* names = new List<const char *>();
-        
+
         EmitHeader(cg, names, offsetCount);
         offsetCount += 4;
-        
+
         for(int i = 0; i < allInterfaces->Nth(j)->NumElements(); i++) {
             const char* fnName = allInterfaces->Nth(j)->Nth(i)->GetName();
             for(int k = 0; k < allMethods->NumElements(); k++) {
@@ -195,7 +195,7 @@ bool VarDecl::CheckCompatibilityInClass(Decl* newDecl, Hashtable<Decl *>* symbol
 bool FnDecl::CheckCompatibilityInClass(Decl* newDecl, Hashtable<Decl *>* symbolTable) {
     //FnDecl* o_f = this;
     FnDecl* c_f = dynamic_cast<FnDecl*>(newDecl);
-    
+
     if(dynamic_cast<ClassDecl*>(this->GetParent()) != NULL) {
         if(c_f == NULL || this->GetParent() == newDecl->GetParent()) {
             ReportError::DeclConflict(newDecl, this);
@@ -257,7 +257,7 @@ void ClassDecl::Check(Hashtable<Decl *>* parentST) {
         }
     }
 
-    
+
     for(int i = 0; i < implements->NumElements(); ++i) {
         Decl* imDecl = symbolTable->Lookup(implements->Nth(i)->GetName());
         if(imDecl == NULL || dynamic_cast<InterfaceDecl *>(imDecl) == NULL)
@@ -269,7 +269,7 @@ void ClassDecl::Check(Hashtable<Decl *>* parentST) {
         ClassDecl* c = dynamic_cast<ClassDecl *>(symbolTable->Lookup(extends->GetName()));
         if(c != NULL) c->AddSymbols(symbolTable, false, true);
     }
-    
+
     /* Add everything implemented in this class itself and check for dups and inheritance */
     this->AddSymbols(symbolTable, true, false);
 
@@ -286,7 +286,7 @@ void ClassDecl::Check(Hashtable<Decl *>* parentST) {
                     ReportError::InterfaceNotImplemented(this, implements->Nth(i));
                     continue;
                 }
-                
+
                 if(!FnDecl::CheckSignature(m_f, i_f)) {
                     ReportError::OverrideMismatch(m_f);
                     continue;
@@ -311,7 +311,7 @@ void ClassDecl::Check(Hashtable<Decl *>* parentST) {
 
     this->varOffset = (allInterfaces->NumElements() + 1) * 4;
     this->objectSize = (allInterfaces->NumElements() + 1 + allVariables->NumElements()) * 4;
-    
+
     /* NOTE NOTE NOTE : CODE GEN CODE GEN CODE GEN PRELIM WORKS */
 
     delete symbolTable;
@@ -324,11 +324,11 @@ InterfaceDecl::InterfaceDecl(Identifier *n, List<Decl*> *m) : Decl(n) {
 
 void InterfaceDecl::Emit(CodeGenerator* cg) {
     allMethods = new List<const char *>();
-    
+
     for(int i = 0; i < members->NumElements(); i++) {
         if(FnDecl* fn = dynamic_cast<FnDecl*>(members->Nth(i))) {
             allMethods->Append(strdup(fn->GetName()));
-        } 
+        }
     }
 }
 
@@ -351,7 +351,7 @@ void InterfaceDecl::Check(Hashtable<Decl *>* parentST) {
     for(int i = 0; i < members->NumElements(); i++) {
         members->Nth(i)->Check(symbolTable);
     }
-    
+
     delete symbolTable;
 }
 
@@ -400,7 +400,7 @@ ClassDecl* p = dynamic_cast<ClassDecl*>(this->GetParent());
 
     bf->SetFrameSize(cg->currentStackSize * 4);
     cg->GenEndFunc();
-    
+
     cg->RemoveScope();
 }
 
@@ -420,12 +420,11 @@ void FnDecl::Check(Hashtable<Decl *>* parentST) {
             ReportError::DeclConflict(formals->Nth(i), symbolTable->Lookup(declName));
         }
     }
-
     /* Check statement block */
     if(body != NULL) {
         body->Check(symbolTable);
     }
-    
+
     delete symbolTable;
 }
 
@@ -444,10 +443,10 @@ bool FnDecl::CheckSignature(FnDecl *o_f, FnDecl *c_f) {
             return false;
         }
     }
-    
+
     return true;
 }
 
-void FnDecl::SetFunctionBody(Stmt *b) { 
+void FnDecl::SetFunctionBody(Stmt *b) {
     (body=b)->SetParent(this);
 }
